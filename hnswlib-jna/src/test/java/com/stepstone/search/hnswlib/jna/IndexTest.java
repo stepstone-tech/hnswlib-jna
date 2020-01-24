@@ -1,17 +1,18 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
-import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpace;
+import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -287,43 +288,84 @@ public class IndexTest {
 	}
 
 	@Test
-	public void testPerformanceSingleThreadInsertionOf600kItems() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.COSINE, 50);
-		index.initialize(600_000);
-		long begin = Instant.now().getEpochSecond();
-		for (int i = 0; i < 600_000; i++) {
-			index.addItem(HnswlibTestUtils.getRandomFloatArray(50));
-		}
-		long end = Instant.now().getEpochSecond();
-		assertTrue((end - begin) < 600); /* +/- 8min for 1 CPU (on 20/01/2020) */
+	public void testSimpleQueryOf5ElementsAndDimension7IP() throws UnexpectedNativeException {
+		Index index = new Index(SpaceName.IP, 7);
+		index.initialize(7);
+
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 5);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f }, 6);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 7);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, 8);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.8f },9);
+
+		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		QueryTuple ipQT = index.knnQuery(input, 4);
+
+		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getIndices());
+		assertArrayEquals(new float[] {-6.0f, -5.95f, -5.9f, -5.85f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
 
 	@Test
-	public void testPerformanceMultiThreadedInsertionOf600kItems() throws UnexpectedNativeException, InterruptedException {
-		int cpus = Runtime.getRuntime().availableProcessors();
-		ExecutorService executorService = Executors.newFixedThreadPool(cpus);
+	public void testSimpleQueryOf5ElementsAndDimension7Cosine() throws UnexpectedNativeException {
+		Index index = new Index(SpaceName.COSINE, 7);
+		index.initialize(7);
 
-		Index index = new Index(SpaceName.COSINE, 50);
-		index.initialize(600_000);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 14);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f }, 13);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 12);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, 11);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.8f },10);
 
-		Runnable addItemIndex = () -> {
-			try {
-				index.addItem(HnswlibTestUtils.getRandomFloatArray(50));
-			} catch (UnexpectedNativeException e) {
-				e.printStackTrace();
-			}
-		};
+		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		long begin = Instant.now().getEpochSecond();
-		for (int i = 0; i < 600_000; i++) {
-			executorService.submit(addItemIndex);
-		}
-		executorService.shutdown();
-		executorService.awaitTermination(5, TimeUnit.MINUTES);
-		long end = Instant.now().getEpochSecond();
-		assertTrue((end - begin) < 150); /* 102s on my laptop (on 20/01/2020) */
+		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getIndices());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 1.552105E-4f, 6.2948465E-4f, 0.001435399f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
+	}
+
+	@Test
+	public void testSimpleQueryOf5ElementsAndDimension7L2() throws UnexpectedNativeException {
+		Index index = new Index(SpaceName.L2, 7);
+		index.initialize(7);
+
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 48);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, 10);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f }, 35);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.8f },1);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 33);
+
+		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		QueryTuple ipQT = index.knnQuery(input, 4);
+
+		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getIndices());
+		assertArrayEquals(new float[] { 0.0f, 0.002500001f, 0.010000004f, 0.022499993f}, ipQT.getCoefficients(), 0.000001f);
+		index.clear();
+	}
+
+	@Ignore
+	@Test
+	public void testToBeValidatedAgainstPython() throws UnexpectedNativeException {
+		Index indexIP = new Index(SpaceName.IP, 1);
+		indexIP.initialize(7);
+
+		indexIP.addItem(new float [] { 1.0f }, 1);
+		indexIP.addItem(new float [] { 2.0f }, 2);
+		indexIP.addItem(new float [] { 3.0f }, 3);
+		indexIP.addItem(new float [] { 4.0f }, 4);
+		indexIP.addItem(new float [] { 5.0f }, 5);
+		indexIP.addItem(new float [] { 6.0f }, 6);
+
+		float[] input = new float[] { 1.0f };
+
+		QueryTuple ipQT = indexIP.knnQuery(input, 3);
+
+		System.out.println("Inner Product Index - Query Results: ");
+		System.out.println(Arrays.toString(ipQT.getCoefficients()));
+		System.out.println(Arrays.toString(ipQT.getIndices()));
+
+		indexIP.clear();
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.sun.jna.Library;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 /**
@@ -35,7 +34,7 @@ public interface Hnswlib extends Library {
 	 *
 	 * @return a result code.
 	 */
-	int initNewIndex(Pointer index, NativeLong maxNumberOfElements, NativeLong m, NativeLong efConstruction, NativeLong randomSeed);
+	int initNewIndex(Pointer index, int maxNumberOfElements, int m, int efConstruction, int randomSeed);
 
 	/**
 	 * Add an item to the index.
@@ -54,7 +53,7 @@ public interface Hnswlib extends Library {
 	 *
 	 * @return number of items in the index.
 	 */
-	NativeLong getIndexLength(Pointer index);
+	int getIndexLength(Pointer index);
 
 	/**
 	 * Save the content of an index into a file (using native implementation).
@@ -75,7 +74,7 @@ public interface Hnswlib extends Library {
 	 *
 	 * @return a result code.
 	 */
-	int loadIndexFromPath(Pointer index, NativeLong maxNumberOfElements, String path);
+	int loadIndexFromPath(Pointer index, int maxNumberOfElements, String path);
 
 	/**
 	 * This function invokes the knnQuery available in the hnswlib native library.

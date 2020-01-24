@@ -1,11 +1,10 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
-import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpace;
+import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
+import com.sun.jna.Pointer;
 
 import java.nio.file.Path;
 
@@ -35,9 +34,9 @@ public final class Index {
 	}
 
 	/**
-	 * @see {link #initialize(long, int, int, int)}
+	 * @see {link #initialize(int, int, int, int)}
 	 */
-	public void initialize(long maxNumberOfElements) throws UnexpectedNativeException {
+	public void initialize(int maxNumberOfElements) throws UnexpectedNativeException {
 		initialize(maxNumberOfElements, 16, 200, 100);
 	}
 
@@ -52,15 +51,11 @@ public final class Index {
 	 * @throws IndexAlreadyInitializedException
 	 * @throws UnexpectedNativeException
 	 */
-	public void initialize(long maxNumberOfElements, int m, int efConstruction, int randomSeed) throws UnexpectedNativeException {
+	public void initialize(int maxNumberOfElements, int m, int efConstruction, int randomSeed) throws UnexpectedNativeException {
 		if (initialized) {
 			throw new IndexAlreadyInitializedException();
 		} else {
-			checkResultCode(hnswlib.initNewIndex(reference,
-					new NativeLong(maxNumberOfElements),
-					new NativeLong(m),
-					new NativeLong(efConstruction),
-					new NativeLong(randomSeed)));
+			checkResultCode(hnswlib.initNewIndex(reference, maxNumberOfElements, m, efConstruction, randomSeed));
 			initialized = true;
 		}
 	}
@@ -100,7 +95,7 @@ public final class Index {
 	 * @param item - float array with the length expected by the index (dimension);
 	 * @param id - an identifier used by the native library.
 	 */
-	public void addNormalizedItem(float[] item,  int id) throws UnexpectedNativeException {
+	public void addNormalizedItem(float[] item, int id) throws UnexpectedNativeException {
 		checkResultCode(hnswlib.addItemToIndex(item, true, id, reference));
 	}
 
@@ -110,8 +105,8 @@ public final class Index {
 	 *
 	 * @return elements count.
 	 */
-	public long getLength(){
-		return hnswlib.getIndexLength(reference).longValue();
+	public int getLength(){
+		return hnswlib.getIndexLength(reference);
 	}
 
 	/**
@@ -163,8 +158,8 @@ public final class Index {
 	 * @param path - path to the index file;
 	 * @param maxNumberOfElements - max number of elements in the index.
 	 */
-	public void load(Path path, long maxNumberOfElements) throws UnexpectedNativeException {
-		checkResultCode(hnswlib.loadIndexFromPath(reference, new NativeLong(maxNumberOfElements), path.toAbsolutePath().toString()));
+	public void load(Path path, int maxNumberOfElements) throws UnexpectedNativeException {
+		checkResultCode(hnswlib.loadIndexFromPath(reference, maxNumberOfElements, path.toAbsolutePath().toString()));
 	}
 
 	/**

@@ -92,7 +92,7 @@ public:
         }
     }
 
-    int add_item(float* item, bool item_normalized, size_t id) {
+    int add_item(float* item, bool item_normalized, int id) {
         TRY_CATCH_RETURN_INT_BLOCK({
             if (get_current_count() >= get_max_elements()) {
                 return RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE;
@@ -100,12 +100,12 @@ public:
             if ((data_must_be_normalized == true) && (item_normalized == false)) {
                 normalize_array(item);                
             }
-            size_t current_id = id != -1 ? id : incremental_id++;             
+            int current_id = id != -1 ? id : incremental_id++;             
             appr_alg->addPoint(item, current_id);                
         });
     }
 
-    int knn_query(float* input, bool input_normalized, size_t k, size_t* indices /* output */, float* coefficients /* output */) {
+    int knn_query(float* input, bool input_normalized, int k, int* indices /* output */, float* coefficients /* output */) {
         std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result;
         TRY_CATCH_RETURN_INT_BLOCK({
             if ((data_must_be_normalized == true) && (input_normalized == false)) {
@@ -144,7 +144,7 @@ public:
     bool index_inited;
     bool ep_added;
     bool data_must_be_normalized;
-    std::atomic<unsigned long> incremental_id{0};
+    std::atomic<unsigned long> incremental_id{1};
     hnswlib::HierarchicalNSW<dist_t> *appr_alg;
     hnswlib::SpaceInterface<float> *l2space;
 
@@ -155,12 +155,12 @@ public:
     }
 };
 
-EXTERN_C Index<float>* createNewIndex(char* spaceName, size_t dimension){
+EXTERN_C Index<float>* createNewIndex(char* spaceName, int dimension){
     Index<float> *object = new Index<float>(spaceName, dimension);
     return object;
 }
 
-EXTERN_C int initNewIndex(Index<float>* index, size_t maxNumberOfElements, size_t M = 16, size_t efConstruction = 200, size_t randomSeed = 100) {
+EXTERN_C int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 16, int efConstruction = 200, int randomSeed = 100) {
     return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
 } 
 
@@ -168,7 +168,7 @@ EXTERN_C int addItemToIndex(float* item, int normalized, int id, Index<float>* i
     return index->add_item(item, normalized, id);
 }
 
-EXTERN_C size_t getIndexLength(Index<float>* index) {
+EXTERN_C int getIndexLength(Index<float>* index) {
     if (index->appr_alg) {
         return index->appr_alg->cur_element_count;
     } else {
@@ -186,7 +186,7 @@ EXTERN_C int loadIndexFromPath(Index<float>* index, size_t maxNumberOfElements, 
     return index->load_index(path_string, maxNumberOfElements);
 }
 
-EXTERN_C int knnQuery(Index<float>* index, float* input, int normalized, size_t k, size_t* indices /* output */, float* coefficients /* output */) {
+EXTERN_C int knnQuery(Index<float>* index, float* input, int normalized, int k, int* indices /* output */, float* coefficients /* output */) {
     return index->knn_query(input, normalized, k, indices, coefficients);
 }
 

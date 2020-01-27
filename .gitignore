@@ -1,5 +1,5 @@
+*.iml
 hnswlib-jna/.idea/
 hnswlib-jna/target/
 hnswlib-jna-example/.idea/
 hnswlib-jna-example/target/
-hnswlib-jna/*.iml

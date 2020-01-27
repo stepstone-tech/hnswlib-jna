@@ -14,7 +14,13 @@
 #include <thread>
 #include <atomic>
 
-#define EXTERN_C extern "C"
+#if _WIN32
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+#define EXTERN_C DLLEXPORT extern "C"
+
 
 #define RESULT_SUCCESSFUL 0
 #define RESULT_EXCEPTION_THROWN 1

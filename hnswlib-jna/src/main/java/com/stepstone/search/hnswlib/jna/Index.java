@@ -143,7 +143,7 @@ public final class Index {
 	 * Stores the content of the index into a file.
 	 * This method relies on the native implementation.
 	 *
-	 * @param path - destination path
+	 * @param path - destination path.
 	 */
 	public void save(Path path) throws UnexpectedNativeException {
 		checkResultCode(hnswlib.saveIndexToPath(reference, path.toAbsolutePath().toString()));
@@ -172,10 +172,21 @@ public final class Index {
 	}
 
 	/**
+	 * Cleanup the area allocated by the index in the native side.
+	 *
+	 * @throws Throwable when anything weird happened. :)
+	 */
+	@Override
+	protected void finalize() throws Throwable {
+		this.clear();
+		super.finalize();
+	}
+
+	/**
 	 * This method checks the result code coming from the
 	 * native execution is correct otherwise throws an exception.
 	 *
-	 * @throws UnexpectedNativeException
+	 * @throws UnexpectedNativeException when something went out of control in the native side.
 	 */
 	private void checkResultCode(int resultCode) throws UnexpectedNativeException {
 		switch (resultCode) {

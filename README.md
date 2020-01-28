@@ -31,7 +31,7 @@ __Instructions for Windows:__
 	* Unpack the archive and include mingw64's bin folder into your PATH as well
 	* Run:
 	`clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o lib/libhnswlib-jna.dll -lpthread`
-	* This will generate the 3 necessary files: _libhnswlib-jna.dll_.
+	* This will generate: _libhnswlib-jna.dll_.
 
 
 ### Reading the dynamic Library

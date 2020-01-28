@@ -12,13 +12,23 @@ Note: The dynamic library's name must be: **libhnswlib-jna**.<extension> (i.e., 
 
 __Instructions for Windows:__
 
-Download and install LLVM: https://releases.llvm.org/9.0.0/LLVM-9.0.0-win64.exe
+1. Using Visual Studio build tools
 
-Download and install Build Tools for Visual Studio 2019 (or higher): https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019
+	* Download and install LLVM: https://releases.llvm.org/9.0.0/LLVM-9.0.0-win64.exe
+	* Download and install Build Tools for Visual Studio 2019 (or higher):  *   *  
+	    * https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019
+	* Then run the _clang++_ command above, replacing the _.dylib_ extension by _.dll_.
+	    * Specifying C++11 can cause version-related issues, if that is the case it can be simply:
+		  `clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.dll`
 
-Then run the _clang++_ command above, replacing the _.dylib_ extension by _.dll_.
-Specifying C++11 can cause version-related issues, if that is the case it can be simply
-> clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.dll
+2. Using MinGW64 compiler
+
+	* Download and install LLVM: https://releases.llvm.org/9.0.0/LLVM-9.0.0-win64.exe
+	* Make sure LLVM's bin folder is in your PATH variable
+	* Download MinGW-w64 with headers for clang: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/
+	* Unpack the archive and include mingw64's bin folder into your PATH as well
+	* Run:
+	`clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o l`
 
 This will generate the 3 necessary files: _libhnswlib-jna.dll_, _libhnswlib-jna.exp_ and _libhnswlib-jna.lib_.
 

@@ -6,9 +6,15 @@
 
   <groupId>com.stepstone.search.hnswlib.jna.example</groupId>
   <artifactId>hnswlib-jna-example</artifactId>
-  <version>1.0-SNAPSHOT</version>
 
   <name>hnswlib-jna-example</name>
+
+  <parent>
+    <groupId>com.stepstone.search.hnswlib.jna</groupId>
+    <artifactId>hnswlib-jna-parent</artifactId>
+    <version>${hnswlib.jna.version}</version>
+    <relativePath>..</relativePath>
+  </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,7 +26,7 @@
     <dependency>
 	  <groupId>com.stepstone.search.hnswlib.jna</groupId>
 	  <artifactId>hnswlib-jna</artifactId>
-	  <version>1.0-SNAPSHOT</version>
+	  <version>${hnswlib.jna.version}</version>
     </dependency>
   </dependencies>
 

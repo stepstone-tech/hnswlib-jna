@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>hnswlib</name>
+
+  <groupId>com.stepstone.search.hnswlib.jna</groupId>
+  <artifactId>hnswlib-jna-parent</artifactId>  
+  <version>${hnswlib.jna.version}</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <hnswlib.jna.version>1.0-SNAPSHOT</hnswlib.jna.version>
+  </properties>
+
+	<modules>
+		<module>hnswlib-jna</module>
+		<module>hnswlib-jna-example</module>
+	</modules>
+
+</project>

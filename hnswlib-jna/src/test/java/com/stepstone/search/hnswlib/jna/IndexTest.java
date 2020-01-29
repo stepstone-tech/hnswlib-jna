@@ -5,14 +5,12 @@ import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVec
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -342,30 +340,6 @@ public class IndexTest {
 		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getIndices());
 		assertArrayEquals(new float[] { 0.0f, 0.002500001f, 0.010000004f, 0.022499993f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
-	}
-
-	@Ignore
-	@Test
-	public void testToBeValidatedAgainstPython() throws UnexpectedNativeException {
-		Index indexIP = new Index(SpaceName.IP, 1);
-		indexIP.initialize(7);
-
-		indexIP.addItem(new float [] { 1.0f }, 1);
-		indexIP.addItem(new float [] { 2.0f }, 2);
-		indexIP.addItem(new float [] { 3.0f }, 3);
-		indexIP.addItem(new float [] { 4.0f }, 4);
-		indexIP.addItem(new float [] { 5.0f }, 5);
-		indexIP.addItem(new float [] { 6.0f }, 6);
-
-		float[] input = new float[] { 1.0f };
-
-		QueryTuple ipQT = indexIP.knnQuery(input, 3);
-
-		System.out.println("Inner Product Index - Query Results: ");
-		System.out.println(Arrays.toString(ipQT.getCoefficients()));
-		System.out.println(Arrays.toString(ipQT.getIndices()));
-
-		indexIP.clear();
 	}
 
 }

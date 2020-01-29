@@ -36,6 +36,7 @@ clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o <pr
 ```
 This procedure will generate `libhnswlib-jna.dll`. 
 
+&nbsp;
 ### Instructions for Linux
 
 1. Download and install CLang++. Older versions might give problems, so better use a recent version.

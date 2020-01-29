@@ -22,6 +22,13 @@ Specifying C++11 can cause version-related issues, if that is the case it can be
 
 This will generate the 3 necessary files: _libhnswlib-jna.dll_, _libhnswlib-jna.exp_ and _libhnswlib-jna.lib_.
 
+__Instructions for Linux:__
+
+CLang++ is required to compile the library, so please install if needed. Older versions might give problems, so better use a recent version.
+The command line is the same, although extra parameter _-fPIC_ might be required:
+> clang++ -O3 -fPIC -shared -std=c++11 bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.so
+
+
 ### Reading the dynamic Library
 
 Once the dynamic library is generated, JNA needs to know where it is located. One way is adding the library to the common library paths of the operational system. Another is adding a folder to the JNA path which can be done using a JVM parameter of via system properties.

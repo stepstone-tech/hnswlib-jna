@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class IndexPerformanceTest {
 
 	@BeforeClass

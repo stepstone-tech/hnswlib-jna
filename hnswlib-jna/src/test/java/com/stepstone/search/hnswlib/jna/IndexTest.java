@@ -5,14 +5,12 @@ import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVec
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -165,7 +163,7 @@ public class IndexTest {
 			QueryTuple queryTuple;
 			try {
 				queryTuple = i1.knnQuery(randomFloatArray, 1);
-				assertEquals(50, queryTuple.getIndices().length);
+				assertEquals(50, queryTuple.getLabels().length);
 				assertEquals(50, queryTuple.getCoefficients().length);
 			} catch (UnexpectedNativeException e) {
 				e.printStackTrace();
@@ -203,15 +201,15 @@ public class IndexTest {
 		index.addItem(new float[] { 1.0f, 1.0f, 1.0f, 0.85f}, 4);
 
 		QueryTuple queryTuple = index.knnQuery(new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 3);
-		assertEquals(1, queryTuple.indices[0]);
-		assertEquals(2, queryTuple.indices[1]);
-		assertEquals(3, queryTuple.indices[2]);
+		assertEquals(1, queryTuple.labels[0]);
+		assertEquals(2, queryTuple.labels[1]);
+		assertEquals(3, queryTuple.labels[2]);
 
 		index.addItem(new float[] { 0.0f, 0.0f, 0.0f, 0.0f}, 2);
 		queryTuple = index.knnQuery(new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 3);
-		assertEquals(1, queryTuple.indices[0]);
-		assertEquals(3, queryTuple.indices[1]);
-		assertEquals(4, queryTuple.indices[2]);
+		assertEquals(1, queryTuple.labels[0]);
+		assertEquals(3, queryTuple.labels[1]);
+		assertEquals(4, queryTuple.labels[2]);
 
 		index.clear();
 	}
@@ -281,7 +279,7 @@ public class IndexTest {
 		QueryTuple ipQT = indexCosine.knnNormalizedQuery(input, 3);
 
 		assertArrayEquals(cosineQT.getCoefficients(), ipQT.getCoefficients(), 0.000001f);
-		assertArrayEquals(cosineQT.getIndices(), ipQT.getIndices());
+		assertArrayEquals(cosineQT.getLabels(), ipQT.getLabels());
 
 		indexIP.clear();
 		indexCosine.clear();
@@ -301,7 +299,7 @@ public class IndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getIndices());
+		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getLabels());
 		assertArrayEquals(new float[] {-6.0f, -5.95f, -5.9f, -5.85f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -320,7 +318,7 @@ public class IndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getIndices());
+		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getLabels());
 		assertArrayEquals(new float[] {-2.3841858E-7f, 1.552105E-4f, 6.2948465E-4f, 0.001435399f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -339,33 +337,9 @@ public class IndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getIndices());
+		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getLabels());
 		assertArrayEquals(new float[] { 0.0f, 0.002500001f, 0.010000004f, 0.022499993f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
-	}
-
-	@Ignore
-	@Test
-	public void testToBeValidatedAgainstPython() throws UnexpectedNativeException {
-		Index indexIP = new Index(SpaceName.IP, 1);
-		indexIP.initialize(7);
-
-		indexIP.addItem(new float [] { 1.0f }, 1);
-		indexIP.addItem(new float [] { 2.0f }, 2);
-		indexIP.addItem(new float [] { 3.0f }, 3);
-		indexIP.addItem(new float [] { 4.0f }, 4);
-		indexIP.addItem(new float [] { 5.0f }, 5);
-		indexIP.addItem(new float [] { 6.0f }, 6);
-
-		float[] input = new float[] { 1.0f };
-
-		QueryTuple ipQT = indexIP.knnQuery(input, 3);
-
-		System.out.println("Inner Product Index - Query Results: ");
-		System.out.println(Arrays.toString(ipQT.getCoefficients()));
-		System.out.println(Arrays.toString(ipQT.getIndices()));
-
-		indexIP.clear();
 	}
 
 }

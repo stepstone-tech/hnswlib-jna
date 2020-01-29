@@ -21,7 +21,6 @@
 #endif
 #define EXTERN_C DLLEXPORT extern "C"
 
-
 #define RESULT_SUCCESSFUL 0
 #define RESULT_EXCEPTION_THROWN 1
 #define RESULT_INDEX_ALREADY_INITIALIZED 2
@@ -150,7 +149,7 @@ public:
     bool index_inited;
     bool ep_added;
     bool data_must_be_normalized;
-    std::atomic<unsigned long> incremental_id{1};
+    std::atomic<unsigned long> incremental_id{0};
     hnswlib::HierarchicalNSW<dist_t> *appr_alg;
     hnswlib::SpaceInterface<float> *l2space;
 
@@ -170,8 +169,8 @@ EXTERN_C int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 
     return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
 } 
 
-EXTERN_C int addItemToIndex(float* item, int normalized, int id, Index<float>* index) { 
-    return index->add_item(item, normalized, id);
+EXTERN_C int addItemToIndex(float* item, int normalized, int label, Index<float>* index) {
+    return index->add_item(item, normalized, label);
 }
 
 EXTERN_C int getIndexLength(Index<float>* index) {

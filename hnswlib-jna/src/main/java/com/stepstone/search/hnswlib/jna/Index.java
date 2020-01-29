@@ -19,7 +19,7 @@ import java.nio.file.Path;
  */
 public final class Index {
 
-	private static final int NO_ID = -1;
+	private static final int NO_LABEL = -1;
 	private static final int RESULT_SUCCESSFUL = 0;
 	private static final int RESULT_QUERY_NO_RESULTS = 3;
 	private static final int RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE = 4;
@@ -48,8 +48,8 @@ public final class Index {
 	 * @param efConstruction;
 	 * @param randomSeed .
 	 *
-	 * @throws IndexAlreadyInitializedException
-	 * @throws UnexpectedNativeException
+	 * @throws IndexAlreadyInitializedException when a index reference was initialized before.
+	 * @throws UnexpectedNativeException when something unexpected happened in the native side.
 	 */
 	public void initialize(int maxNumberOfElements, int m, int efConstruction, int randomSeed) throws UnexpectedNativeException {
 		if (initialized) {
@@ -61,12 +61,13 @@ public final class Index {
 	}
 
 	/**
-	 * Add an item without ID to the index.
+	 * Add an item without label to the index. Internally, an incremental
+	 * label (starting from 1) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
 	public void addItem(float[] item) throws UnexpectedNativeException {
-		addItem(item, NO_ID);
+		addItem(item, NO_LABEL);
 	}
 
 	/**
@@ -74,33 +75,34 @@ public final class Index {
 	 * unless it is required by the Vector Space (e.g., COSINE).
 	 *
 	 * @param item - float array with the length expected by the index (dimension);
-	 * @param id - an identifier used by the native library.
+	 * @param label - an identifier used by the native library.
 	 */
-	public void addItem(float[] item, int id) throws UnexpectedNativeException {
-		checkResultCode(hnswlib.addItemToIndex(item, false, id, reference));
+	public void addItem(float[] item, int label) throws UnexpectedNativeException {
+		checkResultCode(hnswlib.addItemToIndex(item, false, label, reference));
 	}
 
 	/**
-	 * Add a normalized item without ID to the index.
+	 * Add a normalized item without label to the index. Internally, an incremental
+	 * label (starting from 1) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
 	public void addNormalizedItem(float[] item) throws UnexpectedNativeException {
-		addNormalizedItem(item, NO_ID);
+		addNormalizedItem(item, NO_LABEL);
 	}
 
 	/**
 	 * Add a normalized item with ID to the index.
 	 *
 	 * @param item - float array with the length expected by the index (dimension);
-	 * @param id - an identifier used by the native library.
+	 * @param label - an identifier used by the native library.
 	 */
-	public void addNormalizedItem(float[] item, int id) throws UnexpectedNativeException {
-		checkResultCode(hnswlib.addItemToIndex(item, true, id, reference));
+	public void addNormalizedItem(float[] item, int label) throws UnexpectedNativeException {
+		checkResultCode(hnswlib.addItemToIndex(item, true, label, reference));
 	}
 
 	/**
-	 * Return tne number of elements already inserted in
+	 * Return the number of elements already inserted in
 	 * the index.
 	 *
 	 * @return elements count.
@@ -120,7 +122,7 @@ public final class Index {
 	 */
 	public QueryTuple knnQuery(float[] input, int k) throws UnexpectedNativeException {
 		QueryTuple queryTuple = new QueryTuple(k);
-		checkResultCode(hnswlib.knnQuery(reference, input, false, k, queryTuple.indices, queryTuple.coefficients));
+		checkResultCode(hnswlib.knnQuery(reference, input, false, k, queryTuple.labels, queryTuple.coefficients));
 		return queryTuple;
 	}
 
@@ -135,7 +137,7 @@ public final class Index {
 	 */
 	public QueryTuple knnNormalizedQuery(float[] input, int k) throws UnexpectedNativeException {
 		QueryTuple queryTuple = new QueryTuple(k);
-		checkResultCode(hnswlib.knnQuery(reference, input, true, k, queryTuple.indices, queryTuple.coefficients));
+		checkResultCode(hnswlib.knnQuery(reference, input, true, k, queryTuple.labels, queryTuple.coefficients));
 		return queryTuple;
 	}
 
@@ -143,7 +145,7 @@ public final class Index {
 	 * Stores the content of the index into a file.
 	 * This method relies on the native implementation.
 	 *
-	 * @param path - destination path
+	 * @param path - destination path.
 	 */
 	public void save(Path path) throws UnexpectedNativeException {
 		checkResultCode(hnswlib.saveIndexToPath(reference, path.toAbsolutePath().toString()));
@@ -165,17 +167,28 @@ public final class Index {
 	/**
 	 * Free the memory allocated for this index in the native context.
 	 *
-	 * Note: Once the index is cleared it cannot be initialized again. FIXME
+	 * NOTE: Once the index is cleared, it cannot be initialized again.
 	 */
 	public void clear(){
 		hnswlib.clearIndex(reference);
 	}
 
 	/**
+	 * Cleanup the area allocated by the index in the native side.
+	 *
+	 * @throws Throwable when anything weird happened. :)
+	 */
+	@Override
+	protected void finalize() throws Throwable {
+		this.clear();
+		super.finalize();
+	}
+
+	/**
 	 * This method checks the result code coming from the
 	 * native execution is correct otherwise throws an exception.
 	 *
-	 * @throws UnexpectedNativeException
+	 * @throws UnexpectedNativeException when something went out of control in the native side.
 	 */
 	private void checkResultCode(int resultCode) throws UnexpectedNativeException {
 		switch (resultCode) {

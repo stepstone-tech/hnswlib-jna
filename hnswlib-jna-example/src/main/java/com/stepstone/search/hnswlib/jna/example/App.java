@@ -33,7 +33,7 @@ public class App {
 
         System.out.println("Cosine Index - Query Results: ");
         System.out.println(Arrays.toString(cosineQT.getCoefficients()));
-        System.out.println(Arrays.toString(cosineQT.getIndices()));
+        System.out.println(Arrays.toString(cosineQT.getLabels()));
         indexCosine.clear();
     }
 
@@ -54,12 +54,12 @@ public class App {
 
         System.out.println("Inner Product Index - Query Results: ");
         System.out.println(Arrays.toString(ipQT.getCoefficients()));
-        System.out.println(Arrays.toString(ipQT.getIndices()));
+        System.out.println(Arrays.toString(ipQT.getLabels()));
         indexIP.clear();
     }
 
     public static void main( String[] args ) throws UnexpectedNativeException {
-        File projectFolder = new File("lib");
+        File projectFolder = new File("hnswlib-jna-example/lib"); /* place where dynamic library is available */
         System.setProperty("jna.library.path", projectFolder.getAbsolutePath());
 
         exampleOfACosineIndex();

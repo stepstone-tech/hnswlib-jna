@@ -46,7 +46,7 @@ public class App {
         indexIP.initialize(3);
         indexIP.addItem(i1, 1_111_111); /* 1_111_111 is a label */
         indexIP.addItem(i2, 0xCAFECAFE);
-        indexIP.addItem(i3 ); /* if not defined, an incremental label will be automatically assigned */
+        indexIP.addItem(i3); /* if not defined, an incremental label will be automatically assigned */
 
         float[] input = new float[] {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 
@@ -59,8 +59,8 @@ public class App {
     }
 
     public static void main( String[] args ) throws UnexpectedNativeException {
-        File projectFolder = new File("hnswlib-jna-example/lib"); /* place where dynamic library is available */
-        System.setProperty("jna.library.path", projectFolder.getAbsolutePath());
+        File projectFolder = new File("hnswlib-jna-example/lib");       /* place where dynamic library is available */
+        System.setProperty("jna.library.path", projectFolder.getAbsolutePath());  /* in case this is not set, the library will try to use a pre-generated lib/dll */
 
         exampleOfACosineIndex();
         exampleOfAInnerProductIndex();

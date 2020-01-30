@@ -5,7 +5,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,8 +17,7 @@ public class IndexPerformanceTest {
 
 	@BeforeClass
 	public static void setUpOnce() {
-		File libFolder = new File("lib");
-		System.setProperty("jna.library.path", libFolder.toPath().toAbsolutePath().toString());
+		System.setProperty("jna.library.path", IndexPerformanceTest.class.getProtectionDomain().getCodeSource().getLocation().toString());
 	}
 
 	@Test

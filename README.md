@@ -1,6 +1,6 @@
 # __Hnswlib with JNA (Java Native Access)__
 
-This project contains a [JNA](https://github.com/java-native-access/jna) (Java Native Access) implementation built on top of the native [Hnswlib](https://github.com/nmslib/hnswlib) (fast approximate nearest neighbor search) and based on its python bindings. It includes some modifications and simplifications with the purpose of providing Hnswlib features with native like performance to applications written in Java. Differently from the python implementation, the multi-thread support is not included in the bindings itself but it can be easily implemented on the Java side.
+This project contains a [JNA](https://github.com/java-native-access/jna) (Java Native Access) implementation built on top of the native [Hnswlib](https://github.com/nmslib/hnswlib) (Hierarchical Navigable Small World Graph) which offers a fast approximate nearest neighbor search. It includes some modifications and simplifications in order to provide Hnswlib features with native like performance to applications written in Java. Differently from the original Python implementation, the multi-thread support is not included in the bindings itself but it can be easily implemented on the Java side.
 
 &nbsp;
 ## __Compiling the Dynamic Library__

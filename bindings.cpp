@@ -19,7 +19,8 @@
 #else
 #define DLLEXPORT
 #endif
-#define EXTERN_C DLLEXPORT extern "C"
+
+#define EXTERN_C extern "C"
 
 #define RESULT_SUCCESSFUL 0
 #define RESULT_EXCEPTION_THROWN 1
@@ -160,20 +161,20 @@ public:
     }
 };
 
-EXTERN_C Index<float>* createNewIndex(char* spaceName, int dimension){
+EXTERN_C DLLEXPORT Index<float>* createNewIndex(char* spaceName, int dimension){
     Index<float> *object = new Index<float>(spaceName, dimension);
     return object;
 }
 
-EXTERN_C int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 16, int efConstruction = 200, int randomSeed = 100) {
+EXTERN_C DLLEXPORT int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 16, int efConstruction = 200, int randomSeed = 100) {
     return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
 } 
 
-EXTERN_C int addItemToIndex(float* item, int normalized, int label, Index<float>* index) {
+EXTERN_C DLLEXPORT int addItemToIndex(float* item, int normalized, int label, Index<float>* index) {
     return index->add_item(item, normalized, label);
 }
 
-EXTERN_C int getIndexLength(Index<float>* index) {
+EXTERN_C DLLEXPORT int getIndexLength(Index<float>* index) {
     if (index->appr_alg) {
         return index->appr_alg->cur_element_count;
     } else {
@@ -181,21 +182,21 @@ EXTERN_C int getIndexLength(Index<float>* index) {
     }
 }
 
-EXTERN_C int saveIndexToPath(Index<float>* index, char* path) {
+EXTERN_C DLLEXPORT int saveIndexToPath(Index<float>* index, char* path) {
     std::string path_string(path);
     return index->save_index(path_string);
 }
 
-EXTERN_C int loadIndexFromPath(Index<float>* index, size_t maxNumberOfElements, char* path) {
+EXTERN_C DLLEXPORT int loadIndexFromPath(Index<float>* index, size_t maxNumberOfElements, char* path) {
     std::string path_string(path);
     return index->load_index(path_string, maxNumberOfElements);
 }
 
-EXTERN_C int knnQuery(Index<float>* index, float* input, int normalized, int k, int* indices /* output */, float* coefficients /* output */) {
+EXTERN_C DLLEXPORT int knnQuery(Index<float>* index, float* input, int normalized, int k, int* indices /* output */, float* coefficients /* output */) {
     return index->knn_query(input, normalized, k, indices, coefficients);
 }
 
-EXTERN_C int clearIndex(Index<float>* index) {
+EXTERN_C DLLEXPORT int clearIndex(Index<float>* index) {
     index->~Index();
     return 0;
 }

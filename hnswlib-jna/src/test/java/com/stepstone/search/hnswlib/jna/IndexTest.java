@@ -25,8 +25,7 @@ public class IndexTest {
 
 	@BeforeClass
 	public static void setUpOnce() {
-		File libFolder = new File("lib");
-		System.setProperty("jna.library.path", libFolder.toPath().toAbsolutePath().toString());
+		System.setProperty("jna.library.path", IndexTest.class.getProtectionDomain().getCodeSource().getLocation().toString());
 	}
 
 	@Test

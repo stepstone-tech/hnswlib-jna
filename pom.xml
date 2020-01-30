@@ -8,16 +8,12 @@
 
   <groupId>com.stepstone.search.hnswlib.jna</groupId>
   <artifactId>hnswlib-jna-parent</artifactId>  
-  <version>${hnswlib.jna.version}</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <properties>
-    <hnswlib.jna.version>1.0-SNAPSHOT</hnswlib.jna.version>
-  </properties>
-
-	<modules>
-		<module>hnswlib-jna</module>
-		<module>hnswlib-jna-example</module>
-	</modules>
+  <modules>
+    <module>hnswlib-jna</module>
+    <module>hnswlib-jna-example</module>
+  </modules>
 
 </project>

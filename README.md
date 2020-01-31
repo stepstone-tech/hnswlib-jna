@@ -18,7 +18,7 @@ __Note:__ The dynamic library's name must be: **libhnswlib-jna** (`.dylib` is th
 
 1. Download and install [LLVM](https://releases.llvm.org/9.0.0/LLVM-9.0.0-win64.exe);
 2. Download and install [Build Tools for Visual Studio 2019 (or higher)](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019);
-3. Compile the bindings using `clang`:
+3. Compile the bindings using `clang++`:
 ```
 clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.dll
 ```
@@ -30,7 +30,7 @@ This procedure will generate the 3 necessary files: `libhnswlib-jna.dll`, `libhn
 2. Make sure that LLVM's bin folder is in your PATH;
 3. Download [MinGW-w64 with Headers for Clang](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/);
 4. Unpack the archive and include MinGW64's bin folder into your PATH as well;
-5. Compile the bindings using `clang`:
+5. Compile the bindings using `clang++`:
 ```
 clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o <project_folder>lib/libhnswlib-jna.dll -lpthread
 ```
@@ -39,8 +39,8 @@ This procedure will generate `libhnswlib-jna.dll`.
 &nbsp;
 ### Instructions for Linux
 
-1. Download and install CLang++. Older versions might give problems, so better use a recent version.
-2. Compile the bindings using `clang`:
+1. Download and install `clang` (older versions might trigger compilation issues, so it is better use a recent version);
+2. Compile the bindings using `clang++`:
 ```
 clang++ -O3 -fPIC -shared -std=c++11 bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.so
 ```

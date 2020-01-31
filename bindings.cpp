@@ -10,9 +10,8 @@
  */
 
 #include <iostream>
-#include "hnswlib/hnswlib.h"
-#include <thread>
 #include <atomic>
+#include "hnswlib/hnswlib.h"
 
 #if _WIN32
 #define DLLEXPORT __declspec(dllexport)
@@ -27,7 +26,9 @@
 #define RESULT_INDEX_ALREADY_INITIALIZED 2
 #define RESULT_QUERY_CANNOT_RETURN 3
 #define RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE 4
-#define TRY_CATCH_RETURN_INT_BLOCK(block)   int resultCode = RESULT_SUCCESSFUL; try { block } catch (...) { resultCode = RESULT_EXCEPTION_THROWN; }; return resultCode;
+#define RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED 5
+
+#define TRY_CATCH_RETURN_INT_BLOCK(block)   if (index_cleared) return RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED; int result_code = RESULT_SUCCESSFUL; try { block } catch (...) { result_code = RESULT_EXCEPTION_THROWN; }; return result_code;
 
 template<typename dist_t, typename data_t=float>
 class Index {
@@ -45,7 +46,8 @@ public:
         }
         appr_alg = NULL;
         ep_added = true;
-        index_inited = false;
+        index_initialized = false;
+        index_cleared = false;
     }
 
     int init_new_index(const size_t maxElements, const size_t M, const size_t efConstruction, const size_t random_seed) {
@@ -54,7 +56,7 @@ public:
                 return RESULT_INDEX_ALREADY_INITIALIZED;
             }
             appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
-            index_inited = true;
+            index_initialized = true;
             ep_added = false;
         });
     }
@@ -80,7 +82,7 @@ public:
     int load_index(const std::string &path_to_index, size_t max_elements) {
         TRY_CATCH_RETURN_INT_BLOCK({
             if (appr_alg) {
-                std::cerr << "Warning: Calling load_index for an already inited index. Old index is being deallocated.";
+                std::cerr << "Warning: Calling load_index for an already initialized index. Old index is being deallocated.";
                 delete appr_alg;
             }
             appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, path_to_index, false, max_elements);
@@ -137,27 +139,35 @@ public:
         appr_alg->resizeIndex(new_size);
     }
 
-    size_t get_max_elements() const {
+    int get_max_elements() const {
         return appr_alg->max_elements_;
     }
 
-    size_t get_current_count() const {
+    int get_current_count() const {
         return appr_alg->cur_element_count;
+    }
+
+    int clear_index() {
+    	TRY_CATCH_RETURN_INT_BLOCK({
+			delete l2space;
+			if (appr_alg)
+				delete appr_alg;
+			index_cleared = true;
+        });
     }
 
     std::string space_name;
     int dim;
-    bool index_inited;
     bool ep_added;
+    bool index_cleared;
+    bool index_initialized;
     bool data_must_be_normalized;
     std::atomic<unsigned long> incremental_id{0};
     hnswlib::HierarchicalNSW<dist_t> *appr_alg;
     hnswlib::SpaceInterface<float> *l2space;
 
     ~Index() {
-        delete l2space;
-        if (appr_alg)
-            delete appr_alg;
+        clear_index();
     }
 };
 
@@ -197,10 +207,9 @@ EXTERN_C DLLEXPORT int knnQuery(Index<float>* index, float* input, int normalize
 }
 
 EXTERN_C DLLEXPORT int clearIndex(Index<float>* index) {
-    index->~Index();
-    return 0;
+    return index->clear_index();
 }
 
 int main(){
-    return 0;
+    return RESULT_SUCCESSFUL;
 }

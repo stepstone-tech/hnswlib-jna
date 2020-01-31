@@ -1,7 +1,8 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
-import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpace;
+import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
+import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.BeforeClass;
@@ -29,14 +30,14 @@ public class IndexTest {
 	}
 
 	@Test
-	public void testSingleIndexInstantiation(){
+	public void testSingleIndexInstantiation() throws UnexpectedNativeException {
 		Index i1 = new Index(SpaceName.IP, 30);
 		assertNotNull(i1);
 		i1.clear();
 	}
 
 	@Test
-	public void testMultipleIndexInstantiation(){
+	public void testMultipleIndexInstantiation() throws UnexpectedNativeException {
 		Index i1 = new Index(SpaceName.IP, 30);
 		assertNotNull(i1);
 		Index i2 = new Index(SpaceName.COSINE, 30);
@@ -213,7 +214,7 @@ public class IndexTest {
 		index.clear();
 	}
 
-	@Test(expected = ItemCannotBeInsertedIntoTheVectorSpace.class)
+	@Test(expected = ItemCannotBeInsertedIntoTheVectorSpaceException.class)
 	public void testIncludingMoreItemsThanPossible() throws UnexpectedNativeException {
 		Index index = new Index(SpaceName.L2, 4);
 		index.initialize(2);
@@ -339,6 +340,39 @@ public class IndexTest {
 		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getLabels());
 		assertArrayEquals(new float[] { 0.0f, 0.002500001f, 0.010000004f, 0.022499993f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
+	}
+
+	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
+	public void testDoubleClear() throws UnexpectedNativeException {
+		Index idx = new Index(SpaceName.IP, 30);
+		idx.initialize(3);
+		idx.clear();
+		idx.clear();
+	}
+
+	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
+	public void testUsageAfterClear1() throws UnexpectedNativeException {
+		Index idx = new Index(SpaceName.IP, 30);
+		idx.clear();
+		idx.initialize(30);
+	}
+
+	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
+	public void testUsageAfterClear2() throws UnexpectedNativeException {
+		Index index = new Index(SpaceName.IP, 30);
+		index.initialize(30);
+		index.clear();
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 48);
+	}
+
+	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
+	public void testUsageAfterClear3() throws UnexpectedNativeException {
+		Index index = new Index(SpaceName.IP, 30);
+		index.initialize(30);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 48);
+		index.clear();
+		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		index.knnQuery(input, 4);
 	}
 
 }

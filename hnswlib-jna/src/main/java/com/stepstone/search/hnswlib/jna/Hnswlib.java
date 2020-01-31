@@ -91,7 +91,7 @@ public interface Hnswlib extends Library {
 	int knnQuery(Pointer index, float[] input, boolean normalized, int k, int[] indices, float[] coefficients);
 
 	/**
-	 * Clear the index from the memory. (FIXME - it needs to be improved).
+	 * Clear the index from the memory.
 	 *
 	 * @param index - JNA pointer reference of the index.
 	 *

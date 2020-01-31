@@ -1,7 +1,8 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
-import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpace;
+import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
+import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import com.sun.jna.Pointer;
@@ -23,6 +24,7 @@ public final class Index {
 	private static final int RESULT_SUCCESSFUL = 0;
 	private static final int RESULT_QUERY_NO_RESULTS = 3;
 	private static final int RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE = 4;
+	private static final int RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED = 5;
 
 	private static Hnswlib hnswlib = HnswlibFactory.getInstance();
 
@@ -83,7 +85,7 @@ public final class Index {
 
 	/**
 	 * Add a normalized item without label to the index. Internally, an incremental
-	 * label (starting from 1) will be given to this item.
+	 * label (starting from 0) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
@@ -167,10 +169,10 @@ public final class Index {
 	/**
 	 * Free the memory allocated for this index in the native context.
 	 *
-	 * NOTE: Once the index is cleared, it cannot be initialized again.
+	 * NOTE: Once the index is cleared, it cannot be initialized or used again.
 	 */
-	public void clear(){
-		hnswlib.clearIndex(reference);
+	public void clear() throws UnexpectedNativeException {
+		checkResultCode(hnswlib.clearIndex(reference));
 	}
 
 	/**
@@ -197,7 +199,9 @@ public final class Index {
 			case RESULT_QUERY_NO_RESULTS:
 				throw new QueryCannotReturnResultsException();
 			case RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE:
-				throw new ItemCannotBeInsertedIntoTheVectorSpace();
+				throw new ItemCannotBeInsertedIntoTheVectorSpaceException();
+			case RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED:
+				throw new OnceIndexIsClearedItCannotBeReusedException();
 			default:
 				throw new UnexpectedNativeException();
 		}
@@ -211,8 +215,8 @@ public final class Index {
 	public static void normalize(float [] array){
 		int n = array.length;
 		double norm = 0;
-		for (int i = 0; i < n; i++) {
-			norm += array[i] * array[i];
+		for (float v : array) {
+			norm += v * v;
 		}
 		norm = 1.0f / (Math.sqrt(norm) + 1e-30f);
 		for (int i = 0; i < n; i++) {

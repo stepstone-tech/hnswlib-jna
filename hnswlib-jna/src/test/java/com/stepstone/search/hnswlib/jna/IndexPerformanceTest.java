@@ -29,7 +29,7 @@ public class IndexPerformanceTest {
 			index.addItem(HnswlibTestUtils.getRandomFloatArray(50));
 		}
 		long end = Instant.now().getEpochSecond();
-		assertTrue((end - begin) < 600); /* +/- 8min for 1 CPU (on 20/01/2020) */
+		assertTrue((end - begin) < 600); /* +/- 8min for 1 CPU of a MacBook Pro [Intel i5 2.4GHz] (on 20/01/2020) */
 		index.clear();
 	}
 
@@ -56,7 +56,7 @@ public class IndexPerformanceTest {
 		executorService.shutdown();
 		executorService.awaitTermination(5, TimeUnit.MINUTES);
 		long end = Instant.now().getEpochSecond();
-		assertTrue((end - begin) < 150); /* 102s on my laptop (on 20/01/2020) */
+		assertTrue((end - begin) < 150); /* 102s ~ running on a MacBook Pro [Intel i5 2.4GHz] (on 20/01/2020) */
 		index.clear();
 	}
 

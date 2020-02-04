@@ -53,12 +53,20 @@ public final class HnswlibFactory {
 		return library;
 	}
 
+	private static void copyPreGeneratedLibraryFiles(Path folder, String fileName) throws IOException {
+		InputStream libraryStream = HnswlibFactory.class.getResourceAsStream("/" + fileName);
+		Files.copy(libraryStream, folder.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+	}
+
 	private static void checkIfLibraryProvidedNeedsToBeLoadedIntoSO() throws IOException {
 		String property = System.getProperty(JNA_LIBRARY_PATH_PROPERTY);
 		if (property == null) {
 			Path libraryFolder = Files.createTempDirectory(LIBRARY_NAME);
-			InputStream libraryStream = HnswlibFactory.class.getResourceAsStream("/" + getLibraryFileName());
-			Files.copy(libraryStream, libraryFolder.resolve(getLibraryFileName()), StandardCopyOption.REPLACE_EXISTING);
+			copyPreGeneratedLibraryFiles(libraryFolder, getLibraryFileName());
+			if (Platform.isWindows()) {
+				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.exp");
+				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.lib");
+			}
 			System.setProperty(JNA_LIBRARY_PATH_PROPERTY, libraryFolder.toString());
 			libraryFolder.toFile().deleteOnExit();
 		}

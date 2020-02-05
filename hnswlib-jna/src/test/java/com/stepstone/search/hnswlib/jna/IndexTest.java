@@ -375,4 +375,18 @@ public class IndexTest {
 		index.knnQuery(input, 4);
 	}
 
+	@Test
+	public void testTryingDoubleClearDueToGCWhenReferenceIsLost() throws UnexpectedNativeException {
+		Index index = new Index(SpaceName.IP, 30);
+		index.initialize(30);
+		index.clear();
+		index = new Index(SpaceName.IP, 30);
+		int counter = 10;
+		while (counter-- > 0) {
+			System.gc();
+		}
+		index.initialize(30);
+		assertNotNull(index);
+	}
+
 }

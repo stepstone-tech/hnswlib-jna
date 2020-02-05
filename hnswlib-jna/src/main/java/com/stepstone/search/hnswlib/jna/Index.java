@@ -30,6 +30,7 @@ public final class Index {
 
 	private Pointer reference;
 	private boolean initialized;
+	private boolean cleared;
 
 	public Index(SpaceName spaceName, int dimension) {
 		reference = hnswlib.createNewIndex(spaceName.toString(), dimension);
@@ -173,6 +174,7 @@ public final class Index {
 	 */
 	public void clear() throws UnexpectedNativeException {
 		checkResultCode(hnswlib.clearIndex(reference));
+		cleared = true;
 	}
 
 	/**
@@ -182,7 +184,9 @@ public final class Index {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
-		this.clear();
+		if (!cleared) {
+			this.clear();
+		}
 		super.finalize();
 	}
 

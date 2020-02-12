@@ -1,3 +1,6 @@
+<a href="https://github.com/nmslib/hnswlib/commit/0abe4a8b3ba456c70cb2e924c5673cfb128d75bf"><img src="https://img.shields.io/static/v1?label=hnswlib&message=0abe4a8&color=blue"/></a>
+
+
 # __Hnswlib with JNA (Java Native Access)__
 
 This project contains a [JNA](https://github.com/java-native-access/jna) (Java Native Access) implementation built on top of the native [Hnswlib](https://github.com/nmslib/hnswlib) (Hierarchical Navigable Small World Graph) which offers a fast approximate nearest neighbor search. It includes some modifications and simplifications in order to provide Hnswlib features with native like performance to applications written in Java. Differently from the original Python implementation, the multi-thread support is not included in the bindings itself but it can be easily implemented on the Java side.

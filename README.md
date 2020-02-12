@@ -2,7 +2,6 @@
 
 This project contains a [JNA](https://github.com/java-native-access/jna) (Java Native Access) implementation built on top of the native [Hnswlib](https://github.com/nmslib/hnswlib) (Hierarchical Navigable Small World Graph) which offers a fast approximate nearest neighbor search. It includes some modifications and simplifications in order to provide Hnswlib features with native like performance to applications written in Java. Differently from the original Python implementation, the multi-thread support is not included in the bindings itself but it can be easily implemented on the Java side.
 
-&nbsp;
 ## __Using in Your Project__
 
 Add the following dependency in your `pom.xml`:
@@ -10,20 +9,18 @@ Add the following dependency in your `pom.xml`:
 <dependency>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 </dependency>
 ```
 
 `hnswlib-jna` works in collaboration with a __shared library__ which contains the native code. For more information, please check the sections below.
 
-&nbsp;
 ## __Pre-Generated Shared Library__
 
  In order to decrease the complexity and tooling necessary to generate the shared library, we provide within the [jar](#) file some pre-generated libraries for _Windows_, _Debian Linux_ and _MacOS_ which should allow a transparent integration for the user. In case of operating system issues, a runtime exception will be thrown and the manual setup will be advised. 
 
 __On Windows, the [Build Tools for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) is required__.
 
-&nbsp;
 ## __Compiling the Shared Library__
 
 To generate the shared library required by this project, `binding.cpp` needs to be compiled using a C compiler (e.g., `clang` or `gcc`) with C++11 support, at least. The library can be generated with `clang` via:
@@ -32,7 +29,6 @@ clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-j
 ```
 __Note:__ The shared library's name must be: **libhnswlib-jna** (`.dylib` is the extension for MacOS, for windows use `.dll`, and linux `.so`).
 
-&nbsp;
 ### Instructions for Windows
 
 #### Using Visual Studio Build Tools
@@ -57,7 +53,6 @@ clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o <pr
 ```
 This procedure will generate `libhnswlib-jna.dll`. 
 
-&nbsp;
 ### Instructions for Linux
 
 1. Download and install `clang` (older versions might trigger compilation issues, so it is better use a recent version);
@@ -67,7 +62,6 @@ clang++ -O3 -fPIC -shared -std=c++11 bindings.cpp -I hnswlib -o <project_folder>
 ```
 This procedure will generate `libhnswlib-jna.so`. 
 
-&nbsp;
 ## __Reading the Shared Library in Your Project__
 
 Once the shared library is available, it is necessary to tell the `JVM` and `JNA` where it is located. This can be done by setting the property `jna.library.path` via JVM parameters or system properties.

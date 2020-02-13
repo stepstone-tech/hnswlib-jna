@@ -9,6 +9,8 @@ addons:
     token:
       secure: "ehDPUXVrkMQbGUqNmi2MU5ZCZcH4/grL8MjT1fJdQu5LIe6LTF09rAk+yZdc731jv8B3ekM7qa70Tc8irduwiusi1izubqvD69wlYS07RSYhxrB1XYDzWSXrWlwtfvRFqG4vthCdnXKR9x+aTdKyE5KOvbQFgO9VjE5RC5Bb1rQmUIDh6VmOm/EvsUSdgjPqiAxCPCUsC7uWcbvyYvag3CQJePp4SOgAouOOdfPA+U41MhyUSkJ8hZPfNvG/nKBWKnYTGw+medybMquJ8ObXhaHDWwmb1F/fUPaNePURFcVhPNwov1Fz65rbgcf3Q8SOqSQ7uTOKKNifE1kNs72BLP2lF312JeXwAlNAocSXQhUCbzpqc6VQEjNbho9Y1I3+Ea2I/9LIN2FLDhkFxOjoL0MByzWgai1olmDgjhJeNFWXSAROGWqw/wuOD4hmUMRD/B25ngEbUz5Nbk2J7dGZdgMmVSpbhzteeeGvtBYJYW15B11koLwj7ysgtRiK+kO3vfNp1Zim+w4FJBuNQ8uQs0oVqG7S6p2GwYKzJGHwjjH9Y1RY4v5zGzHCUCXpOp8bRsbv7VfYFg90hB2pBPW24gUPczEIjhBFfm3/BUAgzO6XYEOKm0R1tq5aKFJlhMp9b76/iArt3woJUKzEhp6I14pE77ZmdBp4N+ADAKK/kvQ="
 
-script:
+before_install: 
   - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
+  
+script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=hnswlib-jna

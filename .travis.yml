@@ -1,42 +1,37 @@
-arch: 
-  - amd64
-
-sudo: 
- - required
-
-language: 
-  - cpp
-  - java
-
-compiler: 
-  - clang
-
-jdk: 
-  - oraclejdk8
+arch: amd64
+language: cpp
+compiler: clang
 
 jobs:
   include:
   ####################################
     - stage: "Unit tests on linux"   #
   ####################################
-      os: 
-        - linux
+      os: linux
       script: 
+        - java -version
         - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
         - mvn test
+      jdk: oraclejdk8   
+      name: using oraclejdk8     
+    - script: 
+      - java -version
+      - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
+      - mvn test
+      jdk: openjdk8
+      name: using openjdk8  
   ####################################
     - stage: "Unit tests on macos"   #
   ####################################
-      os: 
-        - osx
+      os: osx
+      jdk: oraclejdk8
       script: 
         - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.dylib
         - mvn test
   ####################################
     - stage: "Unit tests on windows" #
   ####################################
-      os:
-        - windows
+      os: windows
       before_install: 
         - choco install jdk8 --version 8.0.211
         - choco install maven --version 3.6.3

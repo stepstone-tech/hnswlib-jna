@@ -1,5 +1,5 @@
 arch: amd64
-language: java
+language: cpp
 compiler: clang
 
 jobs:
@@ -9,22 +9,22 @@ jobs:
       os: linux
       dist: trusty
       script: 
+        - jdk_switcher use oraclejdk8
         - java -version
         - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
         - mvn test
-      jdk: oraclejdk8   
     - stage: "Unit tests"
       name: linux openjdk8
       os: linux
       script: 
+      - jdk_switcher use openjdk8
       - java -version
       - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
       - mvn test
-      jdk: openjdk8
     - stage: "Unit tests"
       os: osx
-      jdk: oraclejdk8
       script: 
+        - jdk_switcher use oraclejdk8
         - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.dylib
         - mvn test
     - stage: "Unit tests"

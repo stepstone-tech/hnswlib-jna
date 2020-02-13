@@ -1,41 +1,13 @@
-arch: amd64
-language: cpp
+language: java
 
-jobs:
-  include:
-    - stage: "Unit tests"
-      os: linux
-      name: "oraclejdk8"
-      script: 
-        - export JAVA_HOME=$HOME/oraclejdk8
-        - $TRAVIS_BUILD_DIR/install-jdk.sh --install oraclejdk8 --target $JAVA_HOME
-        - java -version
-        - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
-        - mvn test
-    - stage: "Unit tests"
-      name: "openjdk8"
-      os: linux
-      script: 
-        - export JAVA_HOME=$HOME/openjdk8
-        - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk8 --target $JAVA_HOME
-        - java -version
-        - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
-        - mvn test
-    - stage: "Unit tests"
-      name: "oraclejdk8"
-      os: osx
-      script: 
-        - export JAVA_HOME=$HOME/oraclejdk8
-        - $TRAVIS_BUILD_DIR/install-jdk.sh --install oraclejdk8 --target $JAVA_HOME
-        - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.dylib
-        - mvn test
-    - stage: "Unit tests"
-      os: windows
-      language: cpp
-      before_install: 
-        - choco install jdk8 --version 8.0.211
-        - choco install maven --version 3.6.3
-      script: 
-        - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211/"
-        - clang++ -O3 -shared bindings.cpp -I hnswlib -o hnswlib-jna/src/main/resources/libhnswlib-jna.dll
-        - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn test
+jdk:
+  - openjdk8
+
+addons:
+  sonarcloud:
+    organization: "stepstone-tech"
+    token:
+      secure: "ehDPUXVrkMQbGUqNmi2MU5ZCZcH4/grL8MjT1fJdQu5LIe6LTF09rAk+yZdc731jv8B3ekM7qa70Tc8irduwiusi1izubqvD69wlYS07RSYhxrB1XYDzWSXrWlwtfvRFqG4vthCdnXKR9x+aTdKyE5KOvbQFgO9VjE5RC5Bb1rQmUIDh6VmOm/EvsUSdgjPqiAxCPCUsC7uWcbvyYvag3CQJePp4SOgAouOOdfPA+U41MhyUSkJ8hZPfNvG/nKBWKnYTGw+medybMquJ8ObXhaHDWwmb1F/fUPaNePURFcVhPNwov1Fz65rbgcf3Q8SOqSQ7uTOKKNifE1kNs72BLP2lF312JeXwAlNAocSXQhUCbzpqc6VQEjNbho9Y1I3+Ea2I/9LIN2FLDhkFxOjoL0MByzWgai1olmDgjhJeNFWXSAROGWqw/wuOD4hmUMRD/B25ngEbUz5Nbk2J7dGZdgMmVSpbhzteeeGvtBYJYW15B11koLwj7ysgtRiK+kO3vfNp1Zim+w4FJBuNQ8uQs0oVqG7S6p2GwYKzJGHwjjH9Y1RY4v5zGzHCUCXpOp8bRsbv7VfYFg90hB2pBPW24gUPczEIjhBFfm3/BUAgzO6XYEOKm0R1tq5aKFJlhMp9b76/iArt3woJUKzEhp6I14pE77ZmdBp4N+ADAKK/kvQ="
+
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=hnswlib-jna

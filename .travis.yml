@@ -16,11 +16,11 @@ jobs:
       name: "openjdk8"
       os: linux
       script: 
-      - export JAVA_HOME=$HOME/openjdk8
-      - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk8 --target $JAVA_HOME
-      - java -version
-      - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
-      - mvn test
+        - export JAVA_HOME=$HOME/openjdk8
+        - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk8 --target $JAVA_HOME
+        - java -version
+        - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
+        - mvn test
     - stage: "Unit tests"
       name: "oraclejdk8"
       os: osx

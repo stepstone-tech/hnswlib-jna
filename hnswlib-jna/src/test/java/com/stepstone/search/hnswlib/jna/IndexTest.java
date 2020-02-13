@@ -5,7 +5,6 @@ import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVec
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -23,12 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class IndexTest {
-
-	@BeforeClass
-	public static void setUpOnce() {
-		System.setProperty("jna.library.path", IndexTest.class.getProtectionDomain().getCodeSource().getLocation().toString());
-	}
-
+	
 	@Test
 	public void testSingleIndexInstantiation() throws UnexpectedNativeException {
 		Index i1 = new Index(SpaceName.IP, 30);

@@ -1,6 +1,5 @@
 arch: amd64
-language: cpp
-compiler: clang
+language: java
 
 jobs:
   include:
@@ -29,6 +28,7 @@ jobs:
         - mvn test
     - stage: "Unit tests"
       os: windows
+      language: cpp
       before_install: 
         - choco install jdk8 --version 8.0.211
         - choco install maven --version 3.6.3

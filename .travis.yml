@@ -1,29 +1,32 @@
 arch: amd64
-language: java
+language: cpp
 
 jobs:
   include:
     - stage: "Unit tests"
-      name: linux oraclejdk8
       os: linux
-      dist: trusty
+      name: "oraclejdk8"
       script: 
-        - jdk_switcher use oraclejdk8
+        - export JAVA_HOME=$HOME/oraclejdk8
+        - $TRAVIS_BUILD_DIR/install-jdk.sh --install oraclejdk8 --target $JAVA_HOME
         - java -version
         - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
         - mvn test
     - stage: "Unit tests"
-      name: linux openjdk8
+      name: "openjdk8"
       os: linux
       script: 
-      - jdk_switcher use openjdk8
+      - export JAVA_HOME=$HOME/openjdk8
+      - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk8 --target $JAVA_HOME
       - java -version
       - clang++ -fPIC -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
       - mvn test
     - stage: "Unit tests"
+      name: "oraclejdk8"
       os: osx
       script: 
-        - jdk_switcher use oraclejdk8
+        - export JAVA_HOME=$HOME/oraclejdk8
+        - $TRAVIS_BUILD_DIR/install-jdk.sh --install oraclejdk8 --target $JAVA_HOME
         - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.dylib
         - mvn test
     - stage: "Unit tests"

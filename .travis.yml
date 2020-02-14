@@ -11,16 +11,8 @@ addons:
 
 jobs:
   include:
-    - dist: trusty
+    - dist: buster
       jdk: oraclejdk8
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-8
-          packages:
-            - clang-8
-      env:
-        - MATRIX_EVAL="CC=clang-8 && CXX=clang++-8"
     - jdk: openjdk8
     - jdk: oraclejdk11
     - jdk: openjdk11

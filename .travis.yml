@@ -22,7 +22,7 @@ jobs:
       env:
         - MATRIX_EVAL="CC=clang-7.0 && CXX=clang++-7.0"
     - jdk: openjdk8
-    - jdK: oraclejdk11
+    - jdk: oraclejdk11
     - jdk: openjdk11
    
 

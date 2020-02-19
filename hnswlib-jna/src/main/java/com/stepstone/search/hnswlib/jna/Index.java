@@ -4,6 +4,7 @@ import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedExcepti
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
+import com.stepstone.search.hnswlib.jna.exception.UnableToCreateNewIndexInstance;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import com.sun.jna.Pointer;
 
@@ -32,8 +33,11 @@ public final class Index {
 	private boolean initialized;
 	private boolean cleared;
 
-	public Index(SpaceName spaceName, int dimension) {
+	public Index(SpaceName spaceName, int dimension) throws UnexpectedNativeException {
 		reference = hnswlib.createNewIndex(spaceName.toString(), dimension);
+		if (reference == null) {
+			throw new UnableToCreateNewIndexInstance();
+		}
 	}
 
 	/**

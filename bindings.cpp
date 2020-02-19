@@ -172,8 +172,13 @@ public:
 };
 
 EXTERN_C DLLEXPORT Index<float>* createNewIndex(char* spaceName, int dimension){
-    Index<float> *object = new Index<float>(spaceName, dimension);
-    return object;
+    Index<float>* index;
+    try {
+        index = new Index<float>(spaceName, dimension);
+    } catch (...) {
+    	index = NULL;
+    }
+    return index;
 }
 
 EXTERN_C DLLEXPORT int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 16, int efConstruction = 200, int randomSeed = 100) {

@@ -5,11 +5,17 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>hnswlib</name>
-
   <groupId>com.stepstone.search.hnswlib.jna</groupId>
   <artifactId>hnswlib-jna-parent</artifactId>  
   <version>1.0.0</version>
   <packaging>pom</packaging>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
   <modules>
     <module>hnswlib-jna</module>

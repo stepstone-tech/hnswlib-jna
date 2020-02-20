@@ -4,10 +4,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <name>hnswlib-jna</name>
   <artifactId>hnswlib-jna</artifactId>
   <version>1.0.0</version>
 
-  <name>hnswlib-jna</name>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
   <parent>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>

@@ -4,7 +4,7 @@ import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedExcepti
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
-import com.stepstone.search.hnswlib.jna.exception.UnableToCreateNewIndexInstance;
+import com.stepstone.search.hnswlib.jna.exception.UnableToCreateNewIndexInstanceException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import com.sun.jna.Pointer;
 
@@ -36,8 +36,24 @@ public final class Index {
 	public Index(SpaceName spaceName, int dimension) throws UnexpectedNativeException {
 		reference = hnswlib.createNewIndex(spaceName.toString(), dimension);
 		if (reference == null) {
-			throw new UnableToCreateNewIndexInstance();
+			throw new UnableToCreateNewIndexInstanceException();
 		}
+	}
+
+	/**
+	 * This method initializes the index with the default values
+	 * for the parameters m, efConstruction, randomSeed and sets
+	 * the maxNumberOfElements to Integer.MAX_VALUE which basically
+	 * means "no limit".
+	 *
+	 * Note: not setting the maxNumberOfElements might lead to out of memory
+	 * issues and unpredictable behaviours in your application. Thus, use this
+	 * method wisely and combine it with monitoring.
+	 *
+	 * For more information please @see {link #initialize(int, int, int, int)}.
+	 */
+	public void initialize() throws UnexpectedNativeException {
+		initialize(Integer.MAX_VALUE);
 	}
 
 	/**

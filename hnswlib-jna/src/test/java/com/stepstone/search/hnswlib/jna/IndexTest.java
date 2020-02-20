@@ -55,7 +55,7 @@ public class IndexTest {
 	public void testIndexMultipleInitialization() throws UnexpectedNativeException {
 		Index i1 = new Index(SpaceName.COSINE, 50);
 		i1.initialize(500_000, 16, 200, 100);
-		i1.initialize(500_000, 16, 200, 100);
+		i1.initialize();
 	}
 
 	@Test

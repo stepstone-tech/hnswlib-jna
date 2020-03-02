@@ -12,7 +12,7 @@ import java.nio.file.StandardCopyOption;
 /**
  * Factory for the hnswlib JNA implementation.
  */
-public final class HnswlibFactory {
+final class HnswlibFactory {
 
 	private static final String LIBRARY_NAME = "hnswlib-jna";
 	private static final String JNA_LIBRARY_PATH_PROPERTY = "jna.library.path";
@@ -27,7 +27,7 @@ public final class HnswlibFactory {
 	 *
 	 * @return hnswlib JNA instance.
 	 */
-	public static Hnswlib getInstance() {
+	static Hnswlib getInstance() {
 		if (instance == null) {
 			try {
 				checkIfLibraryProvidedNeedsToBeLoadedIntoSO();

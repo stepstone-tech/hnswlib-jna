@@ -21,22 +21,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class IndexTest {
+public abstract class IndexTest {
+
+	protected abstract Index createIndexInstance(SpaceName spaceName, int dimensions);
 	
 	@Test
 	public void testSingleIndexInstantiation() throws UnexpectedNativeException {
-		Index i1 = new Index(SpaceName.IP, 30);
+		Index i1 = createIndexInstance(SpaceName.IP, 30);
 		assertNotNull(i1);
 		i1.clear();
 	}
 
 	@Test
 	public void testMultipleIndexInstantiation() throws UnexpectedNativeException {
-		Index i1 = new Index(SpaceName.IP, 30);
+		Index i1 = createIndexInstance(SpaceName.IP, 30);
 		assertNotNull(i1);
-		Index i2 = new Index(SpaceName.COSINE, 30);
+		Index i2 = createIndexInstance(SpaceName.COSINE, 30);
 		assertNotNull(i2);
-		Index i3 = new Index(SpaceName.L2, 30);
+		Index i3 = createIndexInstance(SpaceName.L2, 30);
 		assertNotNull(i3);
 		i1.clear();
 		i2.clear();
@@ -45,7 +47,7 @@ public class IndexTest {
 
 	@Test
 	public void testIndexInitialization() throws UnexpectedNativeException {
-		Index i1 = new Index(SpaceName.COSINE, 50);
+		Index i1 = createIndexInstance(SpaceName.COSINE, 50);
 		i1.initialize(500_000, 16, 200, 100);
 		assertEquals(0, i1.getLength());
 		i1.clear();
@@ -53,14 +55,14 @@ public class IndexTest {
 
 	@Test(expected = IndexAlreadyInitializedException.class)
 	public void testIndexMultipleInitialization() throws UnexpectedNativeException {
-		Index i1 = new Index(SpaceName.COSINE, 50);
+		Index i1 = createIndexInstance(SpaceName.COSINE, 50);
 		i1.initialize(500_000, 16, 200, 100);
 		i1.initialize();
 	}
 
 	@Test
 	public void testIndexAddItem() throws UnexpectedNativeException {
-		Index i1 = new Index(SpaceName.COSINE, 3);
+		Index i1 = createIndexInstance(SpaceName.COSINE, 3);
 		i1.initialize(1);
 		i1.addItem(new float[] { 1.3f, 1.2f, 1.5f }, 3);
 		assertEquals(1, i1.getLength());
@@ -70,7 +72,7 @@ public class IndexTest {
 	@Test
 	public void testIndexAddItemIndependence() throws UnexpectedNativeException {
 		testIndexAddItem();
-		Index i2 = new Index(SpaceName.IP, 4);
+		Index i2 = createIndexInstance(SpaceName.IP, 4);
 		i2.initialize(3);
 		assertEquals(0, i2.getLength());
 		i2.clear();
@@ -81,13 +83,13 @@ public class IndexTest {
 		File tempFile = File.createTempFile("index", "sm");
 		Path tempFilePath = Paths.get(tempFile.getAbsolutePath());
 
-		Index i1 = new Index(SpaceName.COSINE, 3);
+		Index i1 = createIndexInstance(SpaceName.COSINE, 3);
 		i1.initialize(1);
 		i1.addItem(new float[] { 1.3f, 1.2f, 1.5f }, 3);
 		i1.save(tempFilePath);
 		i1.clear();
 
-		Index i2 = new Index(SpaceName.COSINE, 3);
+		Index i2 = createIndexInstance(SpaceName.COSINE, 3);
 		assertEquals(0, i2.getLength());
 		i2.load(tempFilePath,1);
 		assertEquals(1, i2.getLength());
@@ -101,10 +103,10 @@ public class IndexTest {
 		int cpus = Runtime.getRuntime().availableProcessors();
 		ExecutorService executorService = Executors.newFixedThreadPool(cpus);
 
-		Index i1 = new Index(SpaceName.L2, 50);
+		Index i1 = createIndexInstance(SpaceName.L2, 50);
 		i1.initialize(1_050);
 
-		Index i2 = new Index(SpaceName.COSINE, 50);
+		Index i2 = createIndexInstance(SpaceName.COSINE, 50);
 		i2.initialize(1_050);
 
 		Runnable addItemIndex1 = () -> {
@@ -140,7 +142,7 @@ public class IndexTest {
 	public void testConcurrentInsertQuery() throws InterruptedException, UnexpectedNativeException {
 		ExecutorService executorService = Executors.newFixedThreadPool(50);
 
-		Index i1 = new Index(SpaceName.L2, 50);
+		Index i1 = createIndexInstance(SpaceName.L2, 50);
 		i1.initialize(1_050);
 
 		float[] randomFloatArray = HnswlibTestUtils.getRandomFloatArray(50);
@@ -178,7 +180,7 @@ public class IndexTest {
 
 	@Test(expected = QueryCannotReturnResultsException.class)
 	public void testQueryEmptyException() throws UnexpectedNativeException {
-		Index idx = new Index(SpaceName.COSINE, 3);
+		Index idx = createIndexInstance(SpaceName.COSINE, 3);
 		idx.initialize(300);
 		QueryTuple queryTuple = idx.knnQuery(new float[] {1.3f, 1.4f, 1.5f}, 3);
 		assertNull(queryTuple);
@@ -186,7 +188,7 @@ public class IndexTest {
 
 	@Test
 	public void testOverwritingAnItemInTheModel() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.COSINE, 4);
+		Index index = createIndexInstance(SpaceName.COSINE, 4);
 		index.initialize(5);
 
 		index.addItem(new float[] { 1.0f, 1.0f, 1.0f, 1.0f}, 1);
@@ -210,7 +212,7 @@ public class IndexTest {
 
 	@Test(expected = ItemCannotBeInsertedIntoTheVectorSpaceException.class)
 	public void testIncludingMoreItemsThanPossible() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.L2, 4);
+		Index index = createIndexInstance(SpaceName.L2, 4);
 		index.initialize(2);
 
 		index.addItem(new float[] { 1.0f, 1.0f, 1.0f, 1.0f}, 1);
@@ -220,7 +222,7 @@ public class IndexTest {
 
 	@Test
 	public void testNativeArrayNormalization() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.COSINE, 7);
+		Index index = createIndexInstance(SpaceName.COSINE, 7);
 		index.initialize(20);
 
 		float[] item1 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
@@ -254,13 +256,13 @@ public class IndexTest {
 		float[] i3 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f};
 		Index.normalize(i3);
 
-		Index indexCosine = new Index(SpaceName.COSINE, 7);
+		Index indexCosine = createIndexInstance(SpaceName.COSINE, 7);
 		indexCosine.initialize(3);
 		indexCosine.addNormalizedItem(i1, 1_111_111);
 		indexCosine.addNormalizedItem(i2, 1_222_222);
 		indexCosine.addNormalizedItem(i3, 1_333_333);
 
-		Index indexIP = new Index(SpaceName.IP, 7);
+		Index indexIP = createIndexInstance(SpaceName.IP, 7);
 		indexIP.initialize(3);
 		indexIP.addNormalizedItem(i1, 1_111_111);
 		indexIP.addNormalizedItem(i2, 1_222_222);
@@ -281,7 +283,7 @@ public class IndexTest {
 
 	@Test
 	public void testSimpleQueryOf5ElementsAndDimension7IP() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.IP, 7);
+		Index index = createIndexInstance(SpaceName.IP, 7);
 		index.initialize(7);
 
 		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 5);
@@ -300,7 +302,7 @@ public class IndexTest {
 
 	@Test
 	public void testSimpleQueryOf5ElementsAndDimension7Cosine() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.COSINE, 7);
+		Index index = createIndexInstance(SpaceName.COSINE, 7);
 		index.initialize(7);
 
 		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 14);
@@ -319,7 +321,7 @@ public class IndexTest {
 
 	@Test
 	public void testSimpleQueryOf5ElementsAndDimension7L2() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.L2, 7);
+		Index index = createIndexInstance(SpaceName.L2, 7);
 		index.initialize(7);
 
 		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 48);
@@ -338,7 +340,7 @@ public class IndexTest {
 
 	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
 	public void testDoubleClear() throws UnexpectedNativeException {
-		Index idx = new Index(SpaceName.IP, 30);
+		Index idx = createIndexInstance(SpaceName.IP, 30);
 		idx.initialize(3);
 		idx.clear();
 		idx.clear();
@@ -346,14 +348,14 @@ public class IndexTest {
 
 	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
 	public void testUsageAfterClear1() throws UnexpectedNativeException {
-		Index idx = new Index(SpaceName.IP, 30);
+		Index idx = createIndexInstance(SpaceName.IP, 30);
 		idx.clear();
 		idx.initialize(30);
 	}
 
 	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
 	public void testUsageAfterClear2() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.IP, 30);
+		Index index = createIndexInstance(SpaceName.IP, 30);
 		index.initialize(30);
 		index.clear();
 		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 48);
@@ -361,7 +363,7 @@ public class IndexTest {
 
 	@Test(expected = OnceIndexIsClearedItCannotBeReusedException.class)
 	public void testUsageAfterClear3() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.IP, 30);
+		Index index = createIndexInstance(SpaceName.IP, 30);
 		index.initialize(30);
 		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 48);
 		index.clear();
@@ -371,10 +373,10 @@ public class IndexTest {
 
 	@Test
 	public void testTryingDoubleClearDueToGCWhenReferenceIsLost() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.IP, 30);
+		Index index = createIndexInstance(SpaceName.IP, 30);
 		index.initialize(30);
 		index.clear();
-		index = new Index(SpaceName.IP, 30);
+		index = createIndexInstance(SpaceName.IP, 30);
 		int counter = 10;
 		while (counter-- > 0) {
 			System.gc();

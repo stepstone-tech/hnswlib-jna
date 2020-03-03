@@ -13,19 +13,17 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class IndexPerformanceTest {
+public abstract class PerformanceTest {
 
-	@BeforeClass
-	public static void setUpOnce() {
-		System.setProperty("jna.library.path", IndexPerformanceTest.class.getProtectionDomain().getCodeSource().getLocation().toString());
-	}
+	protected abstract Index createIndexInstance(SpaceName spaceName, int dimensions);
 
 	@Test
 	public void testPerformanceSingleThreadInsertionOf600kItems() throws UnexpectedNativeException {
-		Index index = new Index(SpaceName.COSINE, 50);
-		index.initialize(600_000);
+		Index index = createIndexInstance(SpaceName.COSINE, 50);
+		int numItems = 600_000;
+		index.initialize(numItems);
 		long begin = Instant.now().getEpochSecond();
-		for (int i = 0; i < 600_000; i++) {
+		for (int i = 0; i < numItems; i++) {
 			index.addItem(HnswlibTestUtils.getRandomFloatArray(50));
 		}
 		long end = Instant.now().getEpochSecond();
@@ -38,8 +36,9 @@ public class IndexPerformanceTest {
 		int cpus = Runtime.getRuntime().availableProcessors();
 		ExecutorService executorService = Executors.newFixedThreadPool(cpus);
 
-		Index index = new Index(SpaceName.COSINE, 50);
-		index.initialize(600_000);
+		int numItems = 600_000;
+		Index index = createIndexInstance(SpaceName.COSINE, 50);
+		index.initialize(numItems);
 
 		Runnable addItemIndex = () -> {
 			try {
@@ -50,7 +49,7 @@ public class IndexPerformanceTest {
 		};
 
 		long begin = Instant.now().getEpochSecond();
-		for (int i = 0; i < 600_000; i++) {
+		for (int i = 0; i < numItems; i++) {
 			executorService.submit(addItemIndex);
 		}
 		executorService.shutdown();

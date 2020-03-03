@@ -19,9 +19,9 @@ import java.nio.file.Path;
  * Each instance of index has a different memory context and should
  * work independently.
  */
-public final class Index {
+public class Index {
 
-	private static final int NO_LABEL = -1;
+	protected static final int NO_LABEL = -1;
 	private static final int RESULT_SUCCESSFUL = 0;
 	private static final int RESULT_QUERY_NO_RESULTS = 3;
 	private static final int RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE = 4;
@@ -32,8 +32,12 @@ public final class Index {
 	private Pointer reference;
 	private boolean initialized;
 	private boolean cleared;
+	private SpaceName spaceName;
+	private int dimension;
 
 	public Index(SpaceName spaceName, int dimension) throws UnexpectedNativeException {
+		this.spaceName = spaceName;
+		this.dimension = dimension;
 		reference = hnswlib.createNewIndex(spaceName.toString(), dimension);
 		if (reference == null) {
 			throw new UnableToCreateNewIndexInstanceException();
@@ -246,5 +250,13 @@ public final class Index {
 		for (int i = 0; i < n; i++) {
 			array[i] = array[i] * ((float) norm);
 		}
+	}
+
+	public static Index synchronizedIndex(Index index) {
+		Index concurrentIndex = new ConcurrentIndex(index.spaceName, index.dimension);
+		concurrentIndex.reference = index.reference;
+		concurrentIndex.cleared = index.cleared;
+		concurrentIndex.initialized = index.initialized;
+		return concurrentIndex;
 	}
 }

@@ -6,8 +6,8 @@
 
   <name>hnswlib</name>
   <groupId>com.stepstone.search.hnswlib.jna</groupId>
-  <artifactId>hnswlib-jna-parent</artifactId>  
-  <version>1.0.1</version>
+  <artifactId>hnswlib-jna-parent</artifactId>
+  <version>1.1.0</version>
   <packaging>pom</packaging>
 
   <licenses>

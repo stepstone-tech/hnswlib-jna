@@ -34,6 +34,7 @@ public class Index {
 	private boolean cleared;
 	private SpaceName spaceName;
 	private int dimension;
+	private boolean referenceReused;
 
 	public Index(SpaceName spaceName, int dimension) {
 		this.spaceName = spaceName;
@@ -208,7 +209,7 @@ public class Index {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
-		if (!cleared) {
+		if (!cleared && !referenceReused) {
 			this.clear();
 		}
 		super.finalize();
@@ -257,6 +258,7 @@ public class Index {
 		concurrentIndex.reference = index.reference;
 		concurrentIndex.cleared = index.cleared;
 		concurrentIndex.initialized = index.initialized;
+		index.referenceReused = true;
 		return concurrentIndex;
 	}
 }

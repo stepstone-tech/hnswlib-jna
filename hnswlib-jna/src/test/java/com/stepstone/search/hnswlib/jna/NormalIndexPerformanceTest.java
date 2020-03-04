@@ -1,6 +1,9 @@
 package com.stepstone.search.hnswlib.jna;
 
-public class NormalPerformanceTest extends PerformanceTest {
+import org.junit.Ignore;
+
+@Ignore
+public class NormalIndexPerformanceTest extends PerformanceTest {
 
 	@Override
 	protected Index createIndexInstance(SpaceName spaceName, int dimensions) {

@@ -35,7 +35,7 @@ public class Index {
 	private SpaceName spaceName;
 	private int dimension;
 
-	public Index(SpaceName spaceName, int dimension) throws UnexpectedNativeException {
+	public Index(SpaceName spaceName, int dimension) {
 		this.spaceName = spaceName;
 		this.dimension = dimension;
 		reference = hnswlib.createNewIndex(spaceName.toString(), dimension);
@@ -56,14 +56,14 @@ public class Index {
 	 *
 	 * For more information please @see {link #initialize(int, int, int, int)}.
 	 */
-	public void initialize() throws UnexpectedNativeException {
+	public void initialize() {
 		initialize(Integer.MAX_VALUE);
 	}
 
 	/**
 	 * @see {link #initialize(int, int, int, int)}
 	 */
-	public void initialize(int maxNumberOfElements) throws UnexpectedNativeException {
+	public void initialize(int maxNumberOfElements) {
 		initialize(maxNumberOfElements, 16, 200, 100);
 	}
 
@@ -78,7 +78,7 @@ public class Index {
 	 * @throws IndexAlreadyInitializedException when a index reference was initialized before.
 	 * @throws UnexpectedNativeException when something unexpected happened in the native side.
 	 */
-	public void initialize(int maxNumberOfElements, int m, int efConstruction, int randomSeed) throws UnexpectedNativeException {
+	public void initialize(int maxNumberOfElements, int m, int efConstruction, int randomSeed) {
 		if (initialized) {
 			throw new IndexAlreadyInitializedException();
 		} else {
@@ -93,7 +93,7 @@ public class Index {
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
-	public void addItem(float[] item) throws UnexpectedNativeException {
+	public void addItem(float[] item) {
 		addItem(item, NO_LABEL);
 	}
 
@@ -104,7 +104,7 @@ public class Index {
 	 * @param item - float array with the length expected by the index (dimension);
 	 * @param label - an identifier used by the native library.
 	 */
-	public void addItem(float[] item, int label) throws UnexpectedNativeException {
+	public void addItem(float[] item, int label) {
 		checkResultCode(hnswlib.addItemToIndex(item, false, label, reference));
 	}
 
@@ -114,7 +114,7 @@ public class Index {
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
-	public void addNormalizedItem(float[] item) throws UnexpectedNativeException {
+	public void addNormalizedItem(float[] item) {
 		addNormalizedItem(item, NO_LABEL);
 	}
 
@@ -124,7 +124,7 @@ public class Index {
 	 * @param item - float array with the length expected by the index (dimension);
 	 * @param label - an identifier used by the native library.
 	 */
-	public void addNormalizedItem(float[] item, int label) throws UnexpectedNativeException {
+	public void addNormalizedItem(float[] item, int label) {
 		checkResultCode(hnswlib.addItemToIndex(item, true, label, reference));
 	}
 
@@ -147,7 +147,7 @@ public class Index {
 	 *
 	 * @return a query tuple instance that contain the indices and coefficients.
 	 */
-	public QueryTuple knnQuery(float[] input, int k) throws UnexpectedNativeException {
+	public QueryTuple knnQuery(float[] input, int k) {
 		QueryTuple queryTuple = new QueryTuple(k);
 		checkResultCode(hnswlib.knnQuery(reference, input, false, k, queryTuple.labels, queryTuple.coefficients));
 		return queryTuple;
@@ -162,7 +162,7 @@ public class Index {
 	 *
 	 * @return a query tuple instance that contain the indices and coefficients.
 	 */
-	public QueryTuple knnNormalizedQuery(float[] input, int k) throws UnexpectedNativeException {
+	public QueryTuple knnNormalizedQuery(float[] input, int k) {
 		QueryTuple queryTuple = new QueryTuple(k);
 		checkResultCode(hnswlib.knnQuery(reference, input, true, k, queryTuple.labels, queryTuple.coefficients));
 		return queryTuple;
@@ -174,7 +174,7 @@ public class Index {
 	 *
 	 * @param path - destination path.
 	 */
-	public void save(Path path) throws UnexpectedNativeException {
+	public void save(Path path) {
 		checkResultCode(hnswlib.saveIndexToPath(reference, path.toAbsolutePath().toString()));
 	}
 
@@ -187,7 +187,7 @@ public class Index {
 	 * @param path - path to the index file;
 	 * @param maxNumberOfElements - max number of elements in the index.
 	 */
-	public void load(Path path, int maxNumberOfElements) throws UnexpectedNativeException {
+	public void load(Path path, int maxNumberOfElements) {
 		checkResultCode(hnswlib.loadIndexFromPath(reference, maxNumberOfElements, path.toAbsolutePath().toString()));
 	}
 
@@ -196,7 +196,7 @@ public class Index {
 	 *
 	 * NOTE: Once the index is cleared, it cannot be initialized or used again.
 	 */
-	public void clear() throws UnexpectedNativeException {
+	public void clear() {
 		checkResultCode(hnswlib.clearIndex(reference));
 		cleared = true;
 	}
@@ -220,7 +220,7 @@ public class Index {
 	 *
 	 * @throws UnexpectedNativeException when something went out of control in the native side.
 	 */
-	private void checkResultCode(int resultCode) throws UnexpectedNativeException {
+	private void checkResultCode(int resultCode) {
 		switch (resultCode) {
 			case RESULT_SUCCESSFUL:
 				break;

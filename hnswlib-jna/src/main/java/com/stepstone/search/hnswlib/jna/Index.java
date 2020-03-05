@@ -253,6 +253,20 @@ public class Index {
 		}
 	}
 
+	/**
+	 * This method returns a ConcurrentIndex instance which contains
+	 * the same items present in a Index object. The indexes will share
+	 * the same native pointer, so there will be no memory duplication.
+	 *
+	 * It is important to say that the Index class allows adding items is in
+	 * parallel, so the building time can be much slower. On the other hand,
+	 * ConcurrentIndex offers thread-safe methods for adding and querying, which
+	 * can be interesting for multi-threaded environment with online
+	 * updates. Via this method, you can get the best of the two worlds.
+	 *
+	 * @param index with the items added
+	 * @return a thread-safe index
+	 */
 	public static Index synchronizedIndex(Index index) {
 		Index concurrentIndex = new ConcurrentIndex(index.spaceName, index.dimension);
 		concurrentIndex.reference = index.reference;

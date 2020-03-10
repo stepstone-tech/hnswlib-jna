@@ -22,4 +22,19 @@
     <module>hnswlib-jna-example</module>
   </modules>
 
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>search-publicreleases</id>
+      <name>search-publicreleases</name>
+      <url>http://maven.stepstone.com/repository/search-publicreleases/</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>search-snapshots</id>
+      <name>search-snapshots</name>
+      <url>http://maven.stepstone.com/repository/search-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 </project>

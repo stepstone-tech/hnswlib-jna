@@ -48,8 +48,7 @@ public class Index {
 	/**
 	 * This method initializes the index with the default values
 	 * for the parameters m, efConstruction, randomSeed and sets
-	 * the maxNumberOfElements to Integer.MAX_VALUE which basically
-	 * means "no limit".
+	 * the maxNumberOfElements to 1_000_000.
 	 *
 	 * Note: not setting the maxNumberOfElements might lead to out of memory
 	 * issues and unpredictable behaviours in your application. Thus, use this
@@ -58,7 +57,7 @@ public class Index {
 	 * For more information please @see {link #initialize(int, int, int, int)}.
 	 */
 	public void initialize() {
-		initialize(Integer.MAX_VALUE);
+		initialize(1_000_000);
 	}
 
 	/**

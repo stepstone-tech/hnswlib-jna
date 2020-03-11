@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public abstract class PerformanceTest {
+public abstract class AbstractPerformanceTest {
 
 	protected abstract Index createIndexInstance(SpaceName spaceName, int dimensions);
 

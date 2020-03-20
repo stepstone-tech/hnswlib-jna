@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 /**
- * Factory for the hnswlib JNA implementation.
+ * Factory for the hnswlib JNA (4.x.x) implementation.
  */
 final class HnswlibFactory {
 
@@ -31,7 +31,7 @@ final class HnswlibFactory {
 		if (instance == null) {
 			try {
 				checkIfLibraryProvidedNeedsToBeLoadedIntoSO();
-				instance = Native.load(LIBRARY_NAME, Hnswlib.class);
+				instance = (Hnswlib) Native.loadLibrary(LIBRARY_NAME, Hnswlib.class);
 			} catch (UnsatisfiedLinkError | IOException e){
 				throw new UnsatisfiedLinkError("It's not possible to use the pre-generated dynamic libraries on your system. "
 						+ "Please compile it yourself (if not done yet) and set the \"" + JNA_LIBRARY_PATH_PROPERTY + "\" property "

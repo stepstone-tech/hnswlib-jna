@@ -19,6 +19,7 @@
 
   <modules>
     <module>hnswlib-jna</module>
+    <module>hnswlib-jna-legacy</module>
     <module>hnswlib-jna-example</module>
   </modules>
 

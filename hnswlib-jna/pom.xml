@@ -6,7 +6,7 @@
 
   <name>hnswlib-jna</name>
   <artifactId>hnswlib-jna</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2-SNAPSHOT</version>
 
   <licenses>
     <license>
@@ -18,7 +18,7 @@
   <parent>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna-parent</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 

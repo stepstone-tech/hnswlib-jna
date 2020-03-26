@@ -6,7 +6,7 @@
 
   <name>hnswlib-jna-legacy</name>
   <artifactId>hnswlib-jna-legacy</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2-SNAPSHOT</version>
 
   <licenses>
     <license>
@@ -18,12 +18,12 @@
   <parent>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna-parent</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <properties>
-    <hnswlib.jna.version>1.1.1</hnswlib.jna.version>
+    <hnswlib.jna.version>1.1.2-SNAPSHOT</hnswlib.jna.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>

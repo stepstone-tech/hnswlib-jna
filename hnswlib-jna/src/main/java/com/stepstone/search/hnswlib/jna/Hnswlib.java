@@ -99,4 +99,13 @@ public interface Hnswlib extends Library {
 	 */
 	int clearIndex(Pointer index);
 
+	/**
+	 * Sets the query time accuracy / speed trade-off value.
+	 *
+	 * @param ef value.
+	 *
+	 * @return a result code.
+	 */
+	int setEf(int ef);
+
 }

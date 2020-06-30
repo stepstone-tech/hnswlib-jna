@@ -61,8 +61,10 @@ public:
         });
     }
 
-    void set_ef(size_t ef) {
-        appr_alg->ef_ = ef;
+    int set_ef(size_t ef) {
+     	TRY_CATCH_RETURN_INT_BLOCK({
+        	appr_alg->ef_ = ef;
+    	});
     }
 
     size_t get_ef_construction() {
@@ -213,6 +215,10 @@ EXTERN_C DLLEXPORT int knnQuery(Index<float>* index, float* input, int normalize
 
 EXTERN_C DLLEXPORT int clearIndex(Index<float>* index) {
     return index->clear_index();
+}
+
+EXTERN_C DLLEXPORT int setEf(Index<float>* index, int ef) {
+    return index->set_ef(ef);
 }
 
 int main(){

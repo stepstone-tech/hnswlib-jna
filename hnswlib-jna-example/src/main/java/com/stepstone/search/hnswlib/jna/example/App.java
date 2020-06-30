@@ -3,14 +3,13 @@ package com.stepstone.search.hnswlib.jna.example;
 import com.stepstone.search.hnswlib.jna.Index;
 import com.stepstone.search.hnswlib.jna.QueryTuple;
 import com.stepstone.search.hnswlib.jna.SpaceName;
-import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 
 import java.io.File;
 import java.util.Arrays;
 
 public class App {
 
-    private static void exampleOfACosineIndex() throws UnexpectedNativeException {
+    private static void exampleOfACosineIndex() {
         float[] i1 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
         Index.normalize(i1);
         float[] i2 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f};
@@ -37,13 +36,13 @@ public class App {
         indexCosine.clear();
     }
 
-    private static void exampleOfAInnerProductIndex() throws UnexpectedNativeException {
+    private static void exampleOfAInnerProductIndex() {
         float[] i1 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
         float[] i2 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f};
         float[] i3 = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f};
 
         Index indexIP = new Index(SpaceName.IP, 7);
-        indexIP.initialize(3);
+        indexIP.initialize(3, 16, 100, 200);
         indexIP.addItem(i1, 1_111_111); /* 1_111_111 is a label */
         indexIP.addItem(i2, 0xCAFECAFE);
         indexIP.addItem(i3); /* if not defined, an incremental label will be automatically assigned */
@@ -58,10 +57,19 @@ public class App {
         indexIP.clear();
     }
 
-    public static void main( String[] args ) throws UnexpectedNativeException {
-        File projectFolder = new File("hnswlib-jna-example/lib");       /* place where dynamic library is available */
-        System.setProperty("jna.library.path", projectFolder.getAbsolutePath());  /* in case this is not set, the library will try to use a pre-generated lib/dll */
+    /**
+     * This is an example of how manually specify the location of the
+     * dynamic libraries for hnswlib-jna. This step is required when
+     * the pre-compiled ones (provided within the jars) are not sufficient
+     * due to operating system dependencies or version of others libraries.
+     */
+    private static void setupHnswlibJnaDLLManually(){
+        File projectFolder = new File("hnswlib-jna-example/lib");
+        System.setProperty("jna.library.path", projectFolder.getAbsolutePath());
+    }
 
+    public static void main( String[] args ) {
+        //setupHnswlibJnaDLLManually();
         exampleOfACosineIndex();
         exampleOfAInnerProductIndex();
     }

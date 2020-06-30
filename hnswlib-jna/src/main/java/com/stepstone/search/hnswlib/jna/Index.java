@@ -88,6 +88,15 @@ public class Index {
 	}
 
 	/**
+	 * Sets the query time accuracy / speed trade-off value.
+	 *
+	 * @param ef value.
+	 */
+	public void setEf(int ef) {
+		checkResultCode(hnswlib.setEf(reference, ef));
+	}
+
+	/**
 	 * Add an item without label to the index. Internally, an incremental
 	 * label (starting from 1) will be given to this item.
 	 *

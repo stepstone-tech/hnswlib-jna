@@ -106,6 +106,6 @@ public interface Hnswlib extends Library {
 	 *
 	 * @return a result code.
 	 */
-	int setEf(int ef);
+	int setEf(Pointer index, int ef);
 
 }

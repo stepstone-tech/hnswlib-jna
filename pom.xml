@@ -10,6 +10,66 @@
   <version>1.1.1</version>
   <packaging>pom</packaging>
 
+  <description>This project contains a JNA (Java Native Access) implementation built on top of the native Hnswlib (Hierarchical Navigable Small World Graph) which offers a fast approximate nearest neighbor search. It includes some modifications and simplifications in order to provide Hnswlib features with native like performance to applications written in Java. Differently from the original Python implementation, the multi-thread support is not included in the bindings itself but it can be easily implemented on the Java side.</description>
+  <url>https://github.com/stepstone-tech/hnswlib-jna</url>
+
+  <scm>
+    <connection>scm:git:git://github.com/stepstone-tech/hnswlib-jna.git</connection>
+    <developerConnection>scm:git:ssh://github.com:stepstone-tech/hnswlib-jna.git</developerConnection>
+    <url>https://github.com/stepstone-tech/hnswlib-jna/tree/master</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Casper Davies</name>
+      <email>casper.davies@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>German Hurtado</name>
+      <email>german.hurtado@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Henri David</name>
+      <email>henri.david@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Hussama Ismail</name>
+      <email>hussama.ismail@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Stefan Skoruppa</name>
+      <email>stefan.skoruppa@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Tomasz Wojtun</name>
+      <email>tomasz.wojtun@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Vinitha Venugopalsavithri</name>
+      <email>vinitha.venugopalsavithri@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Zhenhua Mai</name>
+      <email>zhenhua.mai@stepstone.com</email>
+      <organization>StepStone</organization>
+      <organizationUrl>https://www.stepstone.com</organizationUrl>
+    </developer>
+  </developers>
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -24,18 +84,66 @@
   </modules>
 
   <distributionManagement>
-    <repository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>search-publicreleases</id>
-      <name>search-publicreleases</name>
-      <url>http://maven.stepstone.com/repository/search-publicreleases/</url>
-    </repository>
     <snapshotRepository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>search-snapshots</id>
-      <name>search-snapshots</name>
-      <url>http://maven.stepstone.com/repository/search-snapshots/</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

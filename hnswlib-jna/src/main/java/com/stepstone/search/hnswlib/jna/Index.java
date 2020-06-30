@@ -54,14 +54,14 @@ public class Index {
 	 * issues and unpredictable behaviours in your application. Thus, use this
 	 * method wisely and combine it with monitoring.
 	 *
-	 * For more information please @see {link #initialize(int, int, int, int)}.
+	 * For more information, please @see {link #initialize(int, int, int, int)}.
 	 */
 	public void initialize() {
 		initialize(1_000_000);
 	}
 
 	/**
-	 * @see {link #initialize(int, int, int, int)}
+	 * For more information, please @see {link #initialize(int, int, int, int)}.
 	 */
 	public void initialize(int maxNumberOfElements) {
 		initialize(maxNumberOfElements, 16, 200, 100);

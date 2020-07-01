@@ -20,6 +20,8 @@ public interface Hnswlib extends Library {
 	 *
 	 * @param spaceName - use: l2, ip or cosine strings only;
 	 * @param dimension - length of the vectors used for indexation.
+	 *
+	 * @return the index reference pointer.
 	 */
 	Pointer createNewIndex(String spaceName, int dimension);
 
@@ -43,6 +45,8 @@ public interface Hnswlib extends Library {
 	 * @param normalized - is the item normalized? if not and if required, it will be performed at the native level;
 	 * @param label - an identifier to be used for this entry;
 	 * @param index - JNA pointer reference of the index.
+	 *
+	 * @return a result code.
 	 */
 	int addItemToIndex(float[] item, boolean normalized, int label, Pointer index);
 
@@ -102,6 +106,7 @@ public interface Hnswlib extends Library {
 	/**
 	 * Sets the query time accuracy / speed trade-off value.
 	 *
+	 * @param index - JNA pointer reference of the index;
 	 * @param ef value.
 	 *
 	 * @return a result code.

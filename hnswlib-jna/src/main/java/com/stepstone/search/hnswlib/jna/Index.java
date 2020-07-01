@@ -62,6 +62,8 @@ public class Index {
 
 	/**
 	 * For more information, please @see {link #initialize(int, int, int, int)}.
+	 *
+	 * @param maxNumberOfElements allowed in the index.
 	 */
 	public void initialize(int maxNumberOfElements) {
 		initialize(maxNumberOfElements, 16, 200, 100);

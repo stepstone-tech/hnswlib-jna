@@ -55,7 +55,8 @@ final class HnswlibFactory {
 
 	private static void copyPreGeneratedLibraryFiles(Path folder, String fileName) throws IOException {
 		InputStream libraryStream = HnswlibFactory.class.getResourceAsStream("/" + fileName);
-		Files.copy(libraryStream, folder.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+		/* windows seems to be blocking manipulation of .lib files; we store as .libw for now. */
+		Files.copy(libraryStream, folder.resolve(fileName.replace(".libw",".lib")), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	private static void checkIfLibraryProvidedNeedsToBeLoadedIntoSO() throws IOException {
@@ -65,7 +66,7 @@ final class HnswlibFactory {
 			copyPreGeneratedLibraryFiles(libraryFolder, getLibraryFileName());
 			if (Platform.isWindows()) {
 				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.exp");
-				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.lib");
+				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.libw");
 			}
 			System.setProperty(JNA_LIBRARY_PATH_PROPERTY, libraryFolder.toString());
 			libraryFolder.toFile().deleteOnExit();

@@ -1,5 +1,5 @@
 <a href="https://github.com/nmslib/hnswlib/releases"><img src="https://img.shields.io/static/v1?label=hnswlib&message=v0.4.0&color=blue"/></a>
-<a href="https://travis-ci.org/stepstone-tech/hnswlib-jna"><img src="https://api.travis-ci.org/stepstone-tech/hnswlib-jna.svg?branch=master"/></a>
+<a href="https://travis-ci.org/stepstone-tech/hnswlib-jna"><img src="https://api.travis-ci.org/stepstone-tech/hnswlib-jna.svg"/></a>
 
 # __Hnswlib with JNA (Java Native Access)__
 
@@ -20,7 +20,7 @@ Add the following dependency in your `pom.xml`:
 <dependency>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 

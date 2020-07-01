@@ -14,7 +14,7 @@ jobs:
         - MAVEN_OPTS="$JAVA_OPTS"
       script: 
         - clang++ -fPIC -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
-        - mvn install -Dgpg.skip
+        - mvn test
   ####################################
     - stage: "Unit tests on macos"   #
   ####################################
@@ -22,7 +22,14 @@ jobs:
       osx_image: xcode9.3
       script: 
         - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.dylib
-        - mvn install -Dgpg.skip
+        - mvn test
+  ###################################################
+    - stage: "Unit tests on macos (no compilation)" #
+  ###################################################
+      os: osx
+      osx_image: xcode9.3
+      script:
+        - mvn test
   ####################################
     - stage: "Unit tests on windows" #
   ####################################
@@ -33,4 +40,14 @@ jobs:
       script: 
         - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211/"
         - clang++ -O3 -shared bindings.cpp -I hnswlib -o hnswlib-jna/src/main/resources/libhnswlib-jna.dll
-        - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn install  -Dgpg.skip
+        - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn test
+  #####################################################
+    - stage: "Unit tests on windows (no compilation)" #
+  #####################################################
+      os: windows
+      before_install:
+        - choco install jdk8 --version 8.0.211
+        - choco install maven --version 3.6.3
+      script:
+        - export JAVA_HOME="/c/Program Files/Java/jdk1.8.0_211/"
+        - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn test

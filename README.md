@@ -28,7 +28,7 @@ For more information and implementation details, please check [hnswlib-jna-examp
 
 ## __Manual Compilation (Whenever it is advised)__
 
-This section includes more information about how to compile the shared libraries on Windows, Linux and Mac. __If you were able to run the example project, this section can be ignored.__
+This section includes more information about how to compile the shared libraries on Windows, Linux and Mac. __If you were able to run the example project on your PC, this section can be ignored.__
 
 ### __Compiling the Shared Library__
 

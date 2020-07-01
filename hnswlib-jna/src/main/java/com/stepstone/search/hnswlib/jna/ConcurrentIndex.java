@@ -31,6 +31,7 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
+	@Override
 	public void addItem(float[] item) {
 		this.writeLock.lock();
 		try {
@@ -48,6 +49,7 @@ public class ConcurrentIndex extends Index {
 	 * @param item - float array with the length expected by the index (dimension);
 	 * @param label - an identifier used by the native library.
 	 */
+	@Override
 	public void addItem(float[] item, int label) {
 		this.writeLock.lock();
 		try {
@@ -63,6 +65,7 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
+	@Override
 	public void addNormalizedItem(float[] item) {
 		this.writeLock.lock();
 		try {
@@ -78,6 +81,7 @@ public class ConcurrentIndex extends Index {
 	 * @param item - float array with the length expected by the index (dimension);
 	 * @param label - an identifier used by the native library.
 	 */
+	@Override
 	public void addNormalizedItem(float[] item, int label) {
 		this.writeLock.lock();
 		try {
@@ -93,6 +97,7 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * @return elements count.
 	 */
+	@Override
 	public int getLength(){
 		this.readLock.lock();
 		try {
@@ -112,6 +117,7 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * @return a query tuple instance that contain the indices and coefficients.
 	 */
+	@Override
 	public QueryTuple knnQuery(float[] input, int k) {
 		this.readLock.lock();
 		QueryTuple queryTuple;
@@ -132,6 +138,7 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * @return a query tuple instance that contain the indices and coefficients.
 	 */
+	@Override
 	public QueryTuple knnNormalizedQuery(float[] input, int k) {
 		this.readLock.lock();
 		QueryTuple queryTuple;
@@ -149,6 +156,7 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * @param path - destination path.
 	 */
+	@Override
 	public void save(Path path) {
 		this.readLock.lock();
 		try {
@@ -167,6 +175,7 @@ public class ConcurrentIndex extends Index {
 	 * @param path - path to the index file;
 	 * @param maxNumberOfElements - max number of elements in the index.
 	 */
+	@Override
 	public void load(Path path, int maxNumberOfElements) {
 		this.writeLock.lock();
 		try {
@@ -181,10 +190,26 @@ public class ConcurrentIndex extends Index {
 	 *
 	 * NOTE: Once the index is cleared, it cannot be initialized or used again.
 	 */
+	@Override
 	public void clear() {
 		this.writeLock.lock();
 		try {
 			super.clear();
+		} finally {
+			this.writeLock.unlock();
+		}
+	}
+
+	/**
+	 * Thread-safe method which sets the query time accuracy / speed trade-off value.
+	 *
+	 * @param ef value.
+	 */
+	@Override
+	public void setEf(int ef) {
+		this.writeLock.lock();
+		try {
+			super.setEf(ef);
 		} finally {
 			this.writeLock.unlock();
 		}

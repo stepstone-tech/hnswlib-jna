@@ -5,7 +5,14 @@ import com.stepstone.search.hnswlib.jna.QueryTuple;
 import com.stepstone.search.hnswlib.jna.SpaceName;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class App {
 
@@ -58,6 +65,42 @@ public class App {
         indexIP.clear();
     }
 
+    private static void exampleOfMultiThreadedIndexBuild() throws InterruptedException {
+        int numberOfItems = 200_000;
+        int numberOfThreads = Runtime.getRuntime().availableProcessors(); /* try numberOfThreads = 1 to see the difference ;D */
+
+        /* this step is just to have some content for indexing (if you have your vectors, you're good to go) */
+        Map<Integer, float[]> vectorsMap = new HashMap<>(numberOfItems);
+        for (int i = 0; i < numberOfItems; i++){
+            vectorsMap.put(i , getRandomFloatArray(40));
+        }
+        /* ************************************************************************************************* */
+
+        Index index = new Index(SpaceName.IP, 7);
+        index.initialize(numberOfItems);
+
+        long startTime = Instant.now().getEpochSecond();
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        for (Map.Entry<Integer, float[]> entry : vectorsMap.entrySet()) {
+            executorService.submit( () -> index.addItem(entry.getValue(), entry.getKey()) );
+        }
+        executorService.shutdown();
+        executorService.awaitTermination(10, TimeUnit.MINUTES);
+        long endTime = Instant.now().getEpochSecond();
+
+        System.out.println("Multi Threaded Index Build:");
+        System.out.println("Building time for " + index.getLength() + " items took " + (endTime - startTime) + " seconds with " + numberOfThreads + " threads");
+    }
+
+    private static float[] getRandomFloatArray(int dimension){
+        float[] array = new float[dimension];
+        Random random = new Random();
+        for (int i = 0; i < dimension; i++){
+            array[i] = random.nextFloat();
+        }
+        return array;
+    }
+
     /**
      * This is an example of how manually specify the location of the
      * dynamic libraries for hnswlib-jna. This step is required when
@@ -69,9 +112,11 @@ public class App {
         System.setProperty("jna.library.path", projectFolder.getAbsolutePath());
     }
 
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws InterruptedException {
         //setupHnswlibJnaDLLManually();
         exampleOfACosineIndex();
         exampleOfAInnerProductIndex();
+        exampleOfMultiThreadedIndexBuild();
     }
+
 }

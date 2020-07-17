@@ -32,7 +32,7 @@ public final class HnswlibFactory {
 			try {
 				checkIfLibraryProvidedNeedsToBeLoadedIntoSO();
 				instance = (Hnswlib) Native.loadLibrary(LIBRARY_NAME, Hnswlib.class);
-			} catch (UnsatisfiedLinkError | IOException e){
+			} catch (UnsatisfiedLinkError | IOException | NullPointerException e) {
 				throw new UnsatisfiedLinkError("It's not possible to use the pre-generated dynamic libraries on your system. "
 						+ "Please compile it yourself (if not done yet) and set the \"" + JNA_LIBRARY_PATH_PROPERTY + "\" property "
 						+ "with correct path to where \"" + getLibraryFileName() + "\" is located.");

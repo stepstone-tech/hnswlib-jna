@@ -105,7 +105,7 @@
                   <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                  <includes>**/*.class,**/*.dll,**/*.dylib,,**/*.exp,**/*.lib,**/*.so</includes>
+                  <includes>**/*.class,**/*.dll,**/*.dylib,,**/*.exp,**/*.lib*,**/*.so</includes>
                   <excludes>**/HnswlibFactory.class,**/*test.class</excludes>
                 </artifactItem>
               </artifactItems>

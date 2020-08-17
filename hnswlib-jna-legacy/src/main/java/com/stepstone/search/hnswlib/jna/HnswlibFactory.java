@@ -14,7 +14,7 @@ import java.nio.file.StandardCopyOption;
  */
 public final class HnswlibFactory {
 
-	private static final String LIBRARY_NAME = "hnswlib-jna";
+	private static final String LIBRARY_NAME = "hnswlib-jna-" + Platform.ARCH;
 	private static final String JNA_LIBRARY_PATH_PROPERTY = "jna.library.path";
 
 	private static Hnswlib instance;
@@ -42,15 +42,15 @@ public final class HnswlibFactory {
 	}
 
 	private static String getLibraryFileName(){
-		String library;
+		String extension;
 		if (Platform.isLinux()) {
-			library = "libhnswlib-jna.so";
+			extension = "so";
 		} else if (Platform.isWindows()) {
-			library = "libhnswlib-jna.dll";
+			extension = "dll";
 		} else {
-			library = "libhnswlib-jna.dylib";
+			extension = "dylib";
 		}
-		return library;
+		return String.format("libhnswlib-jna-%s.%s", Platform.ARCH, extension);
 	}
 
 	private static void copyPreGeneratedLibraryFiles(Path folder, String fileName) throws IOException {
@@ -65,8 +65,8 @@ public final class HnswlibFactory {
 			Path libraryFolder = Files.createTempDirectory(LIBRARY_NAME);
 			copyPreGeneratedLibraryFiles(libraryFolder, getLibraryFileName());
 			if (Platform.isWindows()) {
-				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.exp");
-				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna.libw");
+				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna-x86-64.exp");
+				copyPreGeneratedLibraryFiles(libraryFolder, "libhnswlib-jna-x86-64.libw");
 			}
 			System.setProperty(JNA_LIBRARY_PATH_PROPERTY, libraryFolder.toString());
 			libraryFolder.toFile().deleteOnExit();

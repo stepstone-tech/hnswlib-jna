@@ -72,9 +72,9 @@ public class Index {
 	/**
 	 * Initialize the index to be used.
 	 *
-	 * @param maxNumberOfElements;
-	 * @param m;
-	 * @param efConstruction;
+	 * @param maxNumberOfElements ;
+	 * @param m ;
+	 * @param efConstruction ;
 	 * @param randomSeed .
 	 *
 	 * @throws IndexAlreadyInitializedException when a index reference was initialized before.

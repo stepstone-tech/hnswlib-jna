@@ -13,7 +13,7 @@ jobs:
         - JAVA_OPTS="-Xmx2048m -Xms512m"
         - MAVEN_OPTS="$JAVA_OPTS"
       script: 
-        - clang++ -fPIC -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.so
+        - clang++ -fPIC -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna-x86-64.so
         - mvn test
   ####################################
     - stage: "Unit tests on macos"   #
@@ -21,7 +21,7 @@ jobs:
       os: osx
       osx_image: xcode9.3
       script: 
-        - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna.dylib
+        - clang++ -std=c++11 -O3 -shared bindings.cpp -I hnswlib -o l hnswlib-jna/src/main/resources/libhnswlib-jna-x86-64.dylib
         - mvn test
   ###################################################
     - stage: "Unit tests on macos (no compilation)" #

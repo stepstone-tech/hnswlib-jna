@@ -9,7 +9,7 @@ This project contains a [JNA](https://github.com/java-native-access/jna) (Java N
 
 ### __Pre-Generated Shared Library__
 
-The jar file includes some pre-generated libraries for _Windows_, _Debian Linux_ and _MacOS_  which should allow an easy integration and abstract all complexity related to compilation. In the case of operating system issues, a runtime exception will be thrown and the manual compilation will be advised. 
+The jar file includes some pre-generated libraries for _Windows_, _Debian Linux_ and _MacOS_ (x86-64) which should allow an easy integration and abstract all complexity related to compilation. In the case of operating system issues, a runtime exception will be thrown and the manual compilation will be advised. 
 
 __On Windows, the [Build Tools for Visual Studio 2019 (C++ build tools)](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) is required__.
 
@@ -20,7 +20,7 @@ Add the following dependency in your `pom.xml`:
 <dependency>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -28,15 +28,15 @@ For more information and implementation details, please check [hnswlib-jna-examp
 
 ## __Manual Compilation (Whenever it is advised)__
 
-This section includes more information about how to compile the shared libraries on Windows, Linux and Mac. __If you were able to run the example project on your PC, this section can be ignored.__
+This section includes more information about how to compile the shared libraries on Windows, Linux and Mac for different architectures (e.g., `x86-64`, `aarch64`). __If you were able to run the example project on your PC, this section can be ignored.__
 
 ### __Compiling the Shared Library__
 
 To generate the shared library required by this project, `binding.cpp` needs to be compiled using a C compiler (e.g., `clang` or `gcc`) with C++11 support, at least. The library can be generated with `clang` via:
 ```
-clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.dylib
+clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna-x86-64.dylib
 ```
-__Note:__ The shared library's name must be: **libhnswlib-jna** (`.dylib` is the extension for MacOS, for windows use `.dll`, and linux `.so`).
+__Note:__ The shared library's name must be: __libhnswlib-jna-ARCH.EXT__ where `ARCH` is the canonical architecture name (e.g., `x86-64` for `amd64`, or `aarch64` for ARM64) and `EXT` is `dylib` for MacOS, for windows use `dll`, and linux `so`.
 
 #### Instructions for Windows
 
@@ -46,9 +46,9 @@ __Note:__ The shared library's name must be: **libhnswlib-jna** (`.dylib` is the
 2. Download and install [Build Tools for Visual Studio 2019 (or higher)](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019);
 3. Compile the bindings using `clang`:
 ```
-clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.dll
+clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna-x86-64.dll
 ```
-This procedure will generate the 3 necessary files: `libhnswlib-jna.dll`, `libhnswlib-jna.exp` and `libhnswlib-jna.lib`.
+This procedure will generate the 3 necessary files: `libhnswlib-jna-x86-64.dll`, `libhnswlib-jna-x86-64.exp` and `libhnswlib-jna-x86-64.lib`.
 
 ##### Using MinGW64
 
@@ -58,18 +58,18 @@ This procedure will generate the 3 necessary files: `libhnswlib-jna.dll`, `libhn
 4. Unpack the archive and include MinGW64's bin folder into your PATH as well;
 5. Compile the bindings using `clang`:
 ```
-clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o <project_folder>lib/libhnswlib-jna.dll -lpthread
+clang++ -O3 -target x86_64-pc-windows-gnu -shared bindings.cpp -I hnswlib -o <project_folder>lib/libhnswlib-jna-x86-64.dll -lpthread
 ```
-This procedure will generate `libhnswlib-jna.dll`. 
+This procedure will generate `libhnswlib-jna-x86-64.dll`. 
 
 #### Instructions for Linux
 
 1. Download and install `clang` (older versions might trigger compilation issues, so it is better use a recent version);
 2. Compile the bindings using `clang`:
 ```
-clang++ -O3 -fPIC -shared -std=c++11 bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna.so
+clang++ -O3 -fPIC -shared -std=c++11 bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna-x86-64.so
 ```
-This procedure will generate `libhnswlib-jna.so`. 
+This procedure will generate `libhnswlib-jna-x86-64.so`. 
 
 ### __Reading the Shared Library in Your Project__
 

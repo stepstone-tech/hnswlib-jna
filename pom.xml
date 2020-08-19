@@ -7,7 +7,7 @@
   <name>hnswlib</name>
   <groupId>com.stepstone.search.hnswlib.jna</groupId>
   <artifactId>hnswlib-jna-parent</artifactId>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <description>This project contains a JNA (Java Native Access) implementation built on top of the native Hnswlib (Hierarchical Navigable Small World Graph) which offers a fast approximate nearest neighbor search. It includes some modifications and simplifications in order to provide Hnswlib features with native like performance to applications written in Java. Differently from the original Python implementation, the multi-thread support is not included in the bindings itself but it can be easily implemented on the Java side.</description>

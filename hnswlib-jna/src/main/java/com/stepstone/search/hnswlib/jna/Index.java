@@ -251,15 +251,15 @@ public class Index {
 	 *
 	 * @param array input.
 	 */
-	public static void normalize(float [] array){
+	public static strictfp void normalize(float [] array){
 		int n = array.length;
-		double norm = 0;
+		float norm = 0;
 		for (float v : array) {
 			norm += v * v;
 		}
-		norm = 1.0f / (Math.sqrt(norm) + 1e-30f);
+		norm = (float) (1.0f / (Math.sqrt(norm) + 1e-30f));
 		for (int i = 0; i < n; i++) {
-			array[i] = array[i] * ((float) norm);
+			array[i] = array[i] * norm;
 		}
 	}
 

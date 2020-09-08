@@ -141,6 +141,10 @@ public:
 		return RESULT_SUCCESSFUL;
     }
 
+    float compute_similarity(float* vector1, float* vector2) {
+    	return (appr_alg -> fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
+    }
+
     int knn_query(float* input, bool input_normalized, int k, int* indices /* output */, float* coefficients /* output */) {
         std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result;
         TRY_CATCH_RETURN_INT_BLOCK({
@@ -253,6 +257,10 @@ EXTERN_C DLLEXPORT int getData(Index<float>* index, int id, float* vector, int d
 
 EXTERN_C DLLEXPORT bool hasId(Index<float>* index, int id) {
 	return index-> hasId(id);
+}
+
+EXTERN_C DLLEXPORT float computeSimilarity(Index<float>* index, float* vector1, float* vector2) {
+	return index -> compute_similarity(vector1, vector2);
 }
 
 int main(){

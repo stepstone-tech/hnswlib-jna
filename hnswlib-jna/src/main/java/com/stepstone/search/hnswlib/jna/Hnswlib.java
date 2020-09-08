@@ -131,4 +131,13 @@ public interface Hnswlib extends Library {
 	 */
 	boolean hasId(Pointer index, int id);
 
+	/**
+	 * Compute similarity between two vectors
+	 * @param index index
+	 * @param vector1 vector1
+	 * @param vector2 vector2
+	 * @return similarity score between vectors
+	 */
+	float computeSimilarity(Pointer index, float[] vector1, float[] vector2);
+
 }

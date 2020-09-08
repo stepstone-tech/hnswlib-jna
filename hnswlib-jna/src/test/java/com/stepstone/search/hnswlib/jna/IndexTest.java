@@ -53,4 +53,20 @@ public class IndexTest extends AbstractIndexTest {
 		assertFalse(index.hasId(1));
 		assertFalse(index.getData(1).isPresent());
 	}
+
+	@Test
+	public void testComputeSimilarity() {
+		Index index = createIndexInstance(SpaceName.COSINE, 2);
+		index.initialize();
+		float similarityClose = index.computeSimilarity(
+				new float[]{1F, 2F},
+				new float[]{1F, 3F}
+		);
+		float similarityFar = index.computeSimilarity(
+				new float[] {1F, 100F},
+				new float[] {50F, 450F}
+		);
+		// both values are minus, so the closer one should be closer to zero than the farther one
+		assertEquals(Float.compare(similarityClose, similarityFar), 1);
+	}
 }

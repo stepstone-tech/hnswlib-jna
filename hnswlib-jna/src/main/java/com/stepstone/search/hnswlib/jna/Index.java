@@ -261,6 +261,10 @@ public class Index {
 		return Optional.empty();
 	}
 
+	public float computeSimilarity(float[] vector1, float[] vector2) {
+		return hnswlib.computeSimilarity(reference, vector1, vector2);
+	}
+
 	/**
 	 * Util function that normalizes an array.
 	 *

@@ -27,6 +27,7 @@
 #define RESULT_QUERY_CANNOT_RETURN 3
 #define RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE 4
 #define RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED 5
+#define RESULT_GET_DATA_FAILED 6
 
 #define TRY_CATCH_RETURN_INT_BLOCK(block)   if (index_cleared) return RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED; int result_code = RESULT_SUCCESSFUL; try { block } catch (...) { result_code = RESULT_EXCEPTION_THROWN; }; return result_code;
 
@@ -113,6 +114,31 @@ public:
             int current_id = id != -1 ? id : incremental_id++;             
             appr_alg->addPoint(item, current_id);                
         });
+    }
+
+    bool hasId(int id) {
+    	int label_c;
+        auto search = (appr_alg->label_lookup_.find(id));
+        if (search == (appr_alg->label_lookup_.end()) || (appr_alg->isMarkedDeleted(search->second))) {
+        	return false;
+        }
+        return true;
+    }
+
+    int getDataById(int id, float* data, int dim) {
+		int label_c;
+		auto search = (appr_alg->label_lookup_.find(id));
+		if (search == (appr_alg->label_lookup_.end()) || (appr_alg->isMarkedDeleted(search->second))) {
+			return RESULT_GET_DATA_FAILED;
+		}
+		label_c = search->second;
+		char* data_ptrv = (appr_alg->getDataByInternalId(label_c));
+		float* data_ptr = (float*) data_ptrv;
+		for (int i = 0; i < dim; i++) {
+			data[i] = *data_ptr;
+            data_ptr += 1;
+		}
+		return RESULT_SUCCESSFUL;
     }
 
     int knn_query(float* input, bool input_normalized, int k, int* indices /* output */, float* coefficients /* output */) {
@@ -219,6 +245,14 @@ EXTERN_C DLLEXPORT int clearIndex(Index<float>* index) {
 
 EXTERN_C DLLEXPORT int setEf(Index<float>* index, int ef) {
     return index->set_ef(ef);
+}
+
+EXTERN_C DLLEXPORT int getData(Index<float>* index, int id, float* vector, int dim) {
+	return index-> getDataById(id, vector, dim);
+}
+
+EXTERN_C DLLEXPORT bool hasId(Index<float>* index, int id) {
+	return index-> hasId(id);
 }
 
 int main(){

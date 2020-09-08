@@ -9,6 +9,7 @@ import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import com.sun.jna.Pointer;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Represents a small world index in the java context.
@@ -26,6 +27,7 @@ public class Index {
 	private static final int RESULT_QUERY_NO_RESULTS = 3;
 	private static final int RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE = 4;
 	private static final int RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED = 5;
+	private static final int RESULT_GET_DATA_FAILED = 6;
 
 	private static Hnswlib hnswlib = HnswlibFactory.getInstance();
 
@@ -244,6 +246,19 @@ public class Index {
 			default:
 				throw new UnexpectedNativeException();
 		}
+	}
+
+	public boolean hasId(int id) {
+		return hnswlib.hasId(reference, id);
+	}
+
+	public Optional<float[]> getData(int id) {
+		float[] vector = new float[dimension];
+		int success = hnswlib.getData(reference, id, vector, dimension);
+		if (success != RESULT_GET_DATA_FAILED) {
+			return Optional.of(vector);
+		}
+		return Optional.empty();
 	}
 
 	/**

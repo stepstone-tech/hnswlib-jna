@@ -127,9 +127,9 @@ public interface Hnswlib extends Library {
 	 * Determine whether the index contains data for given id
 	 * @param index index
 	 * @param id id
-	 * @return true if contains data for given id
+	 * @return result_code
 	 */
-	boolean hasId(Pointer index, int id);
+	int hasId(Pointer index, int id);
 
 	/**
 	 * Compute similarity between two vectors

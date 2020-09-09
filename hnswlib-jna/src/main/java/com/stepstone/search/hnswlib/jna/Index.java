@@ -249,13 +249,13 @@ public class Index {
 	}
 
 	public boolean hasId(int id) {
-		return hnswlib.hasId(reference, id);
+		return hnswlib.hasId(reference, id) == RESULT_SUCCESSFUL;
 	}
 
 	public Optional<float[]> getData(int id) {
 		float[] vector = new float[dimension];
 		int success = hnswlib.getData(reference, id, vector, dimension);
-		if (success != RESULT_GET_DATA_FAILED) {
+		if (success == RESULT_SUCCESSFUL) {
 			return Optional.of(vector);
 		}
 		return Optional.empty();

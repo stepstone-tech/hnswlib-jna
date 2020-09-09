@@ -9,7 +9,7 @@ This project contains a [JNA](https://github.com/java-native-access/jna) (Java N
 
 ### __Pre-Generated Shared Library__
 
-The jar file includes some pre-generated libraries for _Windows_, _Debian Linux_ and _MacOS_ (x86-64) which should allow an easy integration and abstract all complexity related to compilation. In the case of operating system issues, a runtime exception will be thrown and the manual compilation will be advised. 
+The jar file includes some pre-generated libraries for _Windows_, _Debian Linux_ and _MacOS_ (x86-64) which should allow an easy integration and abstract all complexity related to compilation. An extra library for Debian Linux (aarch64) is also available for tests with AWS Graviton 2. In the case of operating system issues, a runtime exception will be thrown and the manual compilation will be advised. 
 
 __On Windows, the [Build Tools for Visual Studio 2019 (C++ build tools)](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) is required__.
 
@@ -20,7 +20,7 @@ Add the following dependency in your `pom.xml`:
 <dependency>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -36,7 +36,7 @@ To generate the shared library required by this project, `binding.cpp` needs to 
 ```
 clang++ -O3 -shared bindings.cpp -I hnswlib -o <project_folder>/lib/libhnswlib-jna-x86-64.dylib
 ```
-__Note:__ The shared library's name must be: __libhnswlib-jna-ARCH.EXT__ where `ARCH` is the canonical architecture name (e.g., `x86-64` for `amd64`, or `aarch64` for ARM64) and `EXT` is `dylib` for MacOS, for windows use `dll`, and linux `so`.
+__Note:__ The shared library's name must be: __libhnswlib-jna-ARCH.EXT__ where `ARCH` is the canonical architecture name (e.g., `x86-64` for AMD64, or `aarch64` for ARM64) and `EXT` is `dylib` for MacOS, for windows use `dll`, and linux `so`.
 
 #### Instructions for Windows
 

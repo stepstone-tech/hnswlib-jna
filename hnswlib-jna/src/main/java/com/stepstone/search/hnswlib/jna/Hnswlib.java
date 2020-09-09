@@ -113,4 +113,31 @@ public interface Hnswlib extends Library {
 	 */
 	int setEf(Pointer index, int ef);
 
+	/**
+	 * Populate vector with data for given id
+	 * @param index index
+	 * @param id id
+	 * @param vector vector
+	 * @param dim dimension
+	 * @return result code
+	 */
+	int getData(Pointer index, int id, float[] vector, int dim);
+
+	/**
+	 * Determine whether the index contains data for given id
+	 * @param index index
+	 * @param id id
+	 * @return true if contains data for given id
+	 */
+	boolean hasId(Pointer index, int id);
+
+	/**
+	 * Compute similarity between two vectors
+	 * @param index index
+	 * @param vector1 vector1
+	 * @param vector2 vector2
+	 * @return similarity score between vectors
+	 */
+	float computeSimilarity(Pointer index, float[] vector1, float[] vector2);
+
 }

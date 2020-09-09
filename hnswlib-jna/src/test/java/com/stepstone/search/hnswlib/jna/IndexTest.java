@@ -4,9 +4,14 @@ import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeRe
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class IndexTest extends AbstractIndexTest {
 
@@ -33,5 +38,35 @@ public class IndexTest extends AbstractIndexTest {
 		syncIndex.clear();
 		//has to fail as i1 was cleared through syncIndex
 		i1.addItem(HnswlibTestUtils.getRandomFloatArray(50));
+	}
+
+	@Test
+	public void testGetData() {
+		Index index = createIndexInstance(SpaceName.COSINE, 3);
+		index.initialize();
+		float[] vector = {1F, 2F, 3F};
+		index.addItem(vector);
+		assertTrue(index.hasId(0));
+		Optional<float[]> data = index.getData(0);
+		assertTrue(data.isPresent());
+		assertTrue(Arrays.equals(vector, data.get()));
+		assertFalse(index.hasId(1));
+		assertFalse(index.getData(1).isPresent());
+	}
+
+	@Test
+	public void testComputeSimilarity() {
+		Index index = createIndexInstance(SpaceName.COSINE, 2);
+		index.initialize();
+		float similarityClose = index.computeSimilarity(
+				new float[]{1F, 2F},
+				new float[]{1F, 3F}
+		);
+		float similarityFar = index.computeSimilarity(
+				new float[] {1F, 100F},
+				new float[] {50F, 450F}
+		);
+		// both values are minus, so the closer one should be closer to zero than the farther one
+		assertEquals(Float.compare(similarityClose, similarityFar), 1);
 	}
 }

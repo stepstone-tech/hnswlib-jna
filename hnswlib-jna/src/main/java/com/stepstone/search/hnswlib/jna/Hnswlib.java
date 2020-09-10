@@ -43,12 +43,12 @@ public interface Hnswlib extends Library {
 	 *
 	 * @param item - array containing the input to be inserted into the index;
 	 * @param normalized - is the item normalized? if not and if required, it will be performed at the native level;
-	 * @param label - an identifier to be used for this entry;
+	 * @param id - an identifier to be used for this entry;
 	 * @param index - JNA pointer reference of the index.
 	 *
 	 * @return a result code.
 	 */
-	int addItemToIndex(float[] item, boolean normalized, int label, Pointer index);
+	int addItemToIndex(float[] item, boolean normalized, int id, Pointer index);
 
 	/**
 	 * Retrieve the number of elements already inserted into the index.

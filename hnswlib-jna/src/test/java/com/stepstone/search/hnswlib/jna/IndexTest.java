@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -49,9 +50,28 @@ public class IndexTest extends AbstractIndexTest {
 		assertTrue(index.hasId(0));
 		Optional<float[]> data = index.getData(0);
 		assertTrue(data.isPresent());
-		assertTrue(Arrays.equals(vector, data.get()));
+		assertArrayEquals(vector, data.get(), 0.0f);
 		assertFalse(index.hasId(1));
 		assertFalse(index.getData(1).isPresent());
+
+		float[] vector2 = {1F, 2F, 3F};
+		index.addItem(vector2, 1230);
+		assertTrue(index.hasId(1230));
+		assertFalse(index.hasId(1231));
+
+		index.clear();
+		assertFalse(index.hasId(1230));
+		assertFalse(index.hasId(1231));
+	}
+
+	@Test
+	public void testGetDataWhenIndexCleared() {
+		Index index = createIndexInstance(SpaceName.COSINE, 3);
+		index.initialize();
+		index.clear();
+		assertFalse(index.hasId(1202));
+		Index index2 = createIndexInstance(SpaceName.COSINE, 3);
+		assertFalse(index2.hasId(1202));
 	}
 
 	@Test

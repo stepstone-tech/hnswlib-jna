@@ -167,7 +167,7 @@ public abstract class AbstractIndexTest {
 			QueryTuple queryTuple;
 			try {
 				queryTuple = i1.knnQuery(randomFloatArray, 1);
-				assertEquals(50, queryTuple.getLabels().length);
+				assertEquals(50, queryTuple.getIds().length);
 				assertEquals(50, queryTuple.getCoefficients().length);
 			} catch (UnexpectedNativeException e) {
 				e.printStackTrace();
@@ -205,15 +205,15 @@ public abstract class AbstractIndexTest {
 		index.addItem(new float[] { 1.0f, 1.0f, 1.0f, 0.85f}, 4);
 
 		QueryTuple queryTuple = index.knnQuery(new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 3);
-		assertEquals(1, queryTuple.labels[0]);
-		assertEquals(2, queryTuple.labels[1]);
-		assertEquals(3, queryTuple.labels[2]);
+		assertEquals(1, queryTuple.ids[0]);
+		assertEquals(2, queryTuple.ids[1]);
+		assertEquals(3, queryTuple.ids[2]);
 
 		index.addItem(new float[] { 0.0f, 0.0f, 0.0f, 0.0f}, 2);
 		queryTuple = index.knnQuery(new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 3);
-		assertEquals(1, queryTuple.labels[0]);
-		assertEquals(3, queryTuple.labels[1]);
-		assertEquals(4, queryTuple.labels[2]);
+		assertEquals(1, queryTuple.ids[0]);
+		assertEquals(3, queryTuple.ids[1]);
+		assertEquals(4, queryTuple.ids[2]);
 
 		index.clear();
 	}
@@ -283,7 +283,7 @@ public abstract class AbstractIndexTest {
 		QueryTuple ipQT = indexCosine.knnNormalizedQuery(input, 3);
 
 		assertArrayEquals(cosineQT.getCoefficients(), ipQT.getCoefficients(), 0.000001f);
-		assertArrayEquals(cosineQT.getLabels(), ipQT.getLabels());
+		assertArrayEquals(cosineQT.getIds(), ipQT.getIds());
 
 		indexIP.clear();
 		indexCosine.clear();
@@ -303,7 +303,7 @@ public abstract class AbstractIndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getLabels());
+		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getIds());
 		assertArrayEquals(new float[] {-6.0f, -5.95f, -5.9f, -5.85f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -322,7 +322,7 @@ public abstract class AbstractIndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getLabels());
+		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getIds());
 		assertArrayEquals(new float[] {-2.3841858E-7f, 1.552105E-4f, 6.2948465E-4f, 0.001435399f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -341,7 +341,7 @@ public abstract class AbstractIndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getLabels());
+		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getIds());
 		assertArrayEquals(new float[] { 0.0f, 0.002500001f, 0.010000004f, 0.022499993f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}

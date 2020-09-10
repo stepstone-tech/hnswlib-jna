@@ -287,6 +287,9 @@ public class Index {
 	 * @return the similarity score.
 	 */
 	public float computeSimilarity(float[] vector1, float[] vector2) {
+		if (!initialized) {
+			throw new IndexNotInitializedException();
+		}
 		return hnswlib.computeSimilarity(reference, vector1, vector2);
 	}
 

@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <atomic>
+#include <cmath>
 #include "hnswlib/hnswlib.h"
 
 #if _WIN32
@@ -147,7 +148,13 @@ public:
     }
 
     float compute_similarity(float* vector1, float* vector2) {
-    	return (appr_alg->fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
+    	float similarity;
+        try {
+        	similarity = (appr_alg->fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
+        } catch (...) {
+        	similarity = NAN;
+        }
+    	return similarity;
     }
 
     int knn_query(float* input, bool input_normalized, int k, int* indices /* output */, float* coefficients /* output */) {

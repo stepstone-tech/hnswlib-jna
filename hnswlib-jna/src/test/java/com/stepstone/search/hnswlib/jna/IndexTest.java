@@ -1,5 +1,6 @@
 package com.stepstone.search.hnswlib.jna;
 
+import com.stepstone.search.hnswlib.jna.exception.IndexNotInitializedException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.Test;
@@ -49,6 +50,14 @@ public class IndexTest extends AbstractIndexTest {
 		);
 		// both values are minus, so the closer one should be closer to zero than the farther one
 		assertEquals(Float.compare(similarityClose, similarityFar), 1);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testComputeSimilarityWhenNotInitialized() {
+		Index index = createIndexInstance(SpaceName.COSINE, 2);
+		index.computeSimilarity(
+				new float[] {1F, 100F},
+				new float[] {50F, 450F});
 	}
 
 }

@@ -29,8 +29,10 @@
 #define RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED 5
 #define RESULT_GET_DATA_FAILED 6
 #define RESULT_ID_NOT_IN_INDEX 7
+#define RESULT_INDEX_NOT_INITIALIZED 8
 
-#define TRY_CATCH_RETURN_INT_BLOCK(block)   if (index_cleared) return RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED; int result_code = RESULT_SUCCESSFUL; try { block } catch (...) { result_code = RESULT_EXCEPTION_THROWN; }; return result_code;
+#define TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK(block)    if (index_cleared) return RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED;  int result_code = RESULT_SUCCESSFUL; try { block } catch (...) { result_code = RESULT_EXCEPTION_THROWN; }; return result_code;
+#define TRY_CATCH_RETURN_INT_BLOCK(block)    if (!index_initialized) return RESULT_INDEX_NOT_INITIALIZED; TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK(block)
 
 template<typename dist_t, typename data_t=float>
 class Index {
@@ -53,7 +55,7 @@ public:
     }
 
     int init_new_index(const size_t maxElements, const size_t M, const size_t efConstruction, const size_t random_seed) {
-        TRY_CATCH_RETURN_INT_BLOCK({
+        TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK({
             if (appr_alg) {
                 return RESULT_INDEX_ALREADY_INITIALIZED;
             }
@@ -84,7 +86,7 @@ public:
     }
 
     int load_index(const std::string &path_to_index, size_t max_elements) {
-        TRY_CATCH_RETURN_INT_BLOCK({
+        TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK({
             if (appr_alg) {
                 std::cerr << "Warning: Calling load_index for an already initialized index. Old index is being deallocated.";
                 delete appr_alg;
@@ -145,7 +147,7 @@ public:
     }
 
     float compute_similarity(float* vector1, float* vector2) {
-    	return (appr_alg -> fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
+    	return (appr_alg->fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
     }
 
     int knn_query(float* input, bool input_normalized, int k, int* indices /* output */, float* coefficients /* output */) {
@@ -183,7 +185,7 @@ public:
     }
 
     int clear_index() {
-    	TRY_CATCH_RETURN_INT_BLOCK({
+    	TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK({
 			delete l2space;
 			if (appr_alg)
 				delete appr_alg;
@@ -217,7 +219,7 @@ EXTERN_C DLLEXPORT Index<float>* createNewIndex(char* spaceName, int dimension){
 }
 
 EXTERN_C DLLEXPORT int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 16, int efConstruction = 200, int randomSeed = 100) {
-    return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
+	return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
 } 
 
 EXTERN_C DLLEXPORT int addItemToIndex(float* item, int normalized, int label, Index<float>* index) {
@@ -255,15 +257,16 @@ EXTERN_C DLLEXPORT int setEf(Index<float>* index, int ef) {
 }
 
 EXTERN_C DLLEXPORT int getData(Index<float>* index, int id, float* vector, int dim) {
-	return index-> getDataById(id, vector, dim);
+
+	return index->getDataById(id, vector, dim);
 }
 
 EXTERN_C DLLEXPORT int hasId(Index<float>* index, int id) {
-	return index-> hasId(id);
+	return index->hasId(id);
 }
 
 EXTERN_C DLLEXPORT float computeSimilarity(Index<float>* index, float* vector1, float* vector2) {
-	return index -> compute_similarity(vector1, vector2);
+	return index->compute_similarity(vector1, vector2);
 }
 
 int main(){

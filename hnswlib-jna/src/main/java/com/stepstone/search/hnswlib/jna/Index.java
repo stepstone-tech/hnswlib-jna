@@ -1,6 +1,7 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
+import com.stepstone.search.hnswlib.jna.exception.IndexNotInitializedException;
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
@@ -27,7 +28,7 @@ public class Index {
 	private static final int RESULT_QUERY_NO_RESULTS = 3;
 	private static final int RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE = 4;
 	private static final int RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED = 5;
-	private static final int RESULT_GET_DATA_FAILED = 6;
+	private static final int RESULT_INDEX_NOT_INITIALIZED = 8;
 
 	private static Hnswlib hnswlib = HnswlibFactory.getInstance();
 
@@ -243,6 +244,8 @@ public class Index {
 				throw new ItemCannotBeInsertedIntoTheVectorSpaceException();
 			case RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED:
 				throw new OnceIndexIsClearedItCannotBeReusedException();
+			case RESULT_INDEX_NOT_INITIALIZED:
+				throw new IndexNotInitializedException();
 			default:
 				throw new UnexpectedNativeException();
 		}

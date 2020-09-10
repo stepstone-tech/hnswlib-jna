@@ -4,15 +4,9 @@ import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeRe
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class IndexTest extends AbstractIndexTest {
 
@@ -56,4 +50,5 @@ public class IndexTest extends AbstractIndexTest {
 		// both values are minus, so the closer one should be closer to zero than the farther one
 		assertEquals(Float.compare(similarityClose, similarityFar), 1);
 	}
+
 }

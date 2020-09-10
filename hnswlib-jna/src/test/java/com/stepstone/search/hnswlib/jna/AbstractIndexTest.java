@@ -1,6 +1,7 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
+import com.stepstone.search.hnswlib.jna.exception.IndexNotInitializedException;
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
@@ -424,8 +425,32 @@ public abstract class AbstractIndexTest {
 		index.initialize();
 		index.clear();
 		assertFalse(index.hasId(1202));
-	//	Index index2 = createIndexInstance(SpaceName.COSINE, 3);
-	//	assertFalse(index2.hasId(1202));
+		Index index2 = createIndexInstance(SpaceName.COSINE, 1);
+		assertFalse(index2.hasId(123));
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseAddItemIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.addItem(new float[1]);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseAddNormalizedItemIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.addNormalizedItem(new float[1]);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseKnnQueryIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.knnQuery(new float[1],1);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseKnnNormalizedQueryQueryIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.knnNormalizedQuery(new float[1],1);
 	}
 
 }

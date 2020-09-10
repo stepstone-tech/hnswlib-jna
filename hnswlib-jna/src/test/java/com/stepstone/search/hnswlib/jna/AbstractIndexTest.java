@@ -1,6 +1,7 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
+import com.stepstone.search.hnswlib.jna.exception.IndexNotInitializedException;
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
@@ -11,12 +12,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -167,7 +170,7 @@ public abstract class AbstractIndexTest {
 			QueryTuple queryTuple;
 			try {
 				queryTuple = i1.knnQuery(randomFloatArray, 1);
-				assertEquals(50, queryTuple.getLabels().length);
+				assertEquals(50, queryTuple.getIds().length);
 				assertEquals(50, queryTuple.getCoefficients().length);
 			} catch (UnexpectedNativeException e) {
 				e.printStackTrace();
@@ -205,15 +208,15 @@ public abstract class AbstractIndexTest {
 		index.addItem(new float[] { 1.0f, 1.0f, 1.0f, 0.85f}, 4);
 
 		QueryTuple queryTuple = index.knnQuery(new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 3);
-		assertEquals(1, queryTuple.labels[0]);
-		assertEquals(2, queryTuple.labels[1]);
-		assertEquals(3, queryTuple.labels[2]);
+		assertEquals(1, queryTuple.ids[0]);
+		assertEquals(2, queryTuple.ids[1]);
+		assertEquals(3, queryTuple.ids[2]);
 
 		index.addItem(new float[] { 0.0f, 0.0f, 0.0f, 0.0f}, 2);
 		queryTuple = index.knnQuery(new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 3);
-		assertEquals(1, queryTuple.labels[0]);
-		assertEquals(3, queryTuple.labels[1]);
-		assertEquals(4, queryTuple.labels[2]);
+		assertEquals(1, queryTuple.ids[0]);
+		assertEquals(3, queryTuple.ids[1]);
+		assertEquals(4, queryTuple.ids[2]);
 
 		index.clear();
 	}
@@ -283,7 +286,7 @@ public abstract class AbstractIndexTest {
 		QueryTuple ipQT = indexCosine.knnNormalizedQuery(input, 3);
 
 		assertArrayEquals(cosineQT.getCoefficients(), ipQT.getCoefficients(), 0.000001f);
-		assertArrayEquals(cosineQT.getLabels(), ipQT.getLabels());
+		assertArrayEquals(cosineQT.getIds(), ipQT.getIds());
 
 		indexIP.clear();
 		indexCosine.clear();
@@ -303,7 +306,7 @@ public abstract class AbstractIndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getLabels());
+		assertArrayEquals(new int[] {5, 6, 7, 8}, ipQT.getIds());
 		assertArrayEquals(new float[] {-6.0f, -5.95f, -5.9f, -5.85f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -322,7 +325,7 @@ public abstract class AbstractIndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getLabels());
+		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getIds());
 		assertArrayEquals(new float[] {-2.3841858E-7f, 1.552105E-4f, 6.2948465E-4f, 0.001435399f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -341,7 +344,7 @@ public abstract class AbstractIndexTest {
 		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 		QueryTuple ipQT = index.knnQuery(input, 4);
 
-		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getLabels());
+		assertArrayEquals(new int[] {33, 35, 48, 10}, ipQT.getIds());
 		assertArrayEquals(new float[] { 0.0f, 0.002500001f, 0.010000004f, 0.022499993f}, ipQT.getCoefficients(), 0.000001f);
 		index.clear();
 	}
@@ -391,6 +394,111 @@ public abstract class AbstractIndexTest {
 		}
 		index.initialize(30);
 		assertNotNull(index);
+	}
+
+	@Test
+	public void testGetData() {
+		Index index = createIndexInstance(SpaceName.COSINE, 3);
+		index.initialize();
+		float[] vector = {1F, 2F, 3F};
+		index.addItem(vector);
+		assertTrue(index.hasId(0));
+		Optional<float[]> data = index.getData(0);
+		assertTrue(data.isPresent());
+		assertArrayEquals(vector, data.get(), 0.0f);
+		assertFalse(index.hasId(1));
+		assertFalse(index.getData(1).isPresent());
+
+		float[] vector2 = {1F, 2F, 3F};
+		index.addItem(vector2, 1230);
+		assertTrue(index.hasId(1230));
+		assertFalse(index.hasId(1231));
+
+		index.clear();
+		assertFalse(index.hasId(1230));
+		assertFalse(index.hasId(1231));
+	}
+
+	@Test
+	public void testGetDataWhenIndexCleared() {
+		Index index = createIndexInstance(SpaceName.COSINE, 3);
+		index.initialize();
+		index.clear();
+		assertFalse(index.hasId(1202));
+		Index index2 = createIndexInstance(SpaceName.COSINE, 1);
+		assertFalse(index2.hasId(123));
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseAddItemIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.addItem(new float[1]);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseAddNormalizedItemIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.addNormalizedItem(new float[1]);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseKnnQueryIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.knnQuery(new float[1],1);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testUseKnnNormalizedQueryQueryIndexWithoutInitialize() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.knnNormalizedQuery(new float[1],1);
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testGetMWithoutInitializeIndex() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.getM();
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testGetEfWithoutInitializeIndex() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.getEf();
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testGetEfConstructionWithoutInitializeIndex() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.getEfConstruction();
+	}
+
+	@Test
+	public void testMarkAsDeleted() {
+		Index index = createIndexInstance(SpaceName.COSINE, 7);
+		index.initialize(7);
+
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 14);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f }, 13);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 12);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, 11);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.8f },10);
+
+		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		QueryTuple ipQT = index.knnQuery(input, 4);
+
+		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getIds());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 1.552105E-4f, 6.2948465E-4f, 0.001435399f}, ipQT.getCoefficients(), 0.000001f);
+
+		index.markDeleted(13);
+		QueryTuple ipQT2 = index.knnQuery(input, 4);
+		assertArrayEquals(new int[] {14, 12, 11, 10}, ipQT2.getIds());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 6.2948465E-4f, 0.001435399f, 0.0025851727f}, ipQT2.getCoefficients(), 0.000001f);
+
+		index.markDeleted(12);
+		QueryTuple ipQT3 = index.knnQuery(input, 3);
+		assertArrayEquals(new int[] {14, 11, 10}, ipQT3.getIds());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 0.001435399f, 0.0025851727f}, ipQT3.getCoefficients(), 0.000001f);
+
+		index.clear();
 	}
 
 }

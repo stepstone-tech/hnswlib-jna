@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <atomic>
+#include <cmath>
 #include "hnswlib/hnswlib.h"
 
 #if _WIN32
@@ -28,8 +29,11 @@
 #define RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE 4
 #define RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED 5
 #define RESULT_GET_DATA_FAILED 6
+#define RESULT_ID_NOT_IN_INDEX 7
+#define RESULT_INDEX_NOT_INITIALIZED 8
 
-#define TRY_CATCH_RETURN_INT_BLOCK(block)   if (index_cleared) return RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED; int result_code = RESULT_SUCCESSFUL; try { block } catch (...) { result_code = RESULT_EXCEPTION_THROWN; }; return result_code;
+#define TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK(block)    if (index_cleared) return RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED;  int result_code = RESULT_SUCCESSFUL; try { block } catch (...) { result_code = RESULT_EXCEPTION_THROWN; }; return result_code;
+#define TRY_CATCH_RETURN_INT_BLOCK(block)    if (!index_initialized) return RESULT_INDEX_NOT_INITIALIZED; TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK(block)
 
 template<typename dist_t, typename data_t=float>
 class Index {
@@ -46,19 +50,17 @@ public:
             data_must_be_normalized = true;
         }
         appr_alg = NULL;
-        ep_added = true;
         index_initialized = false;
         index_cleared = false;
     }
 
     int init_new_index(const size_t maxElements, const size_t M, const size_t efConstruction, const size_t random_seed) {
-        TRY_CATCH_RETURN_INT_BLOCK({
+        TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK({
             if (appr_alg) {
                 return RESULT_INDEX_ALREADY_INITIALIZED;
             }
             appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
             index_initialized = true;
-            ep_added = false;
         });
     }
 
@@ -68,11 +70,15 @@ public:
     	});
     }
 
-    size_t get_ef_construction() {
+   	int get_ef() {
+   		return appr_alg->ef_;
+   	}
+
+    int get_ef_construction() {
         return appr_alg->ef_construction_;
     }
 
-    size_t get_M() {
+    int get_M() {
         return appr_alg->M_;
     }
 
@@ -83,7 +89,7 @@ public:
     }
 
     int load_index(const std::string &path_to_index, size_t max_elements) {
-        TRY_CATCH_RETURN_INT_BLOCK({
+        TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK({
             if (appr_alg) {
                 std::cerr << "Warning: Calling load_index for an already initialized index. Old index is being deallocated.";
                 delete appr_alg;
@@ -116,33 +122,41 @@ public:
         });
     }
 
-    bool hasId(int id) {
-    	int label_c;
-        auto search = (appr_alg->label_lookup_.find(id));
-        if (search == (appr_alg->label_lookup_.end()) || (appr_alg->isMarkedDeleted(search->second))) {
-        	return false;
-        }
-        return true;
+    int hasId(int id) {
+    	TRY_CATCH_RETURN_INT_BLOCK({
+    		int label_c;
+			auto search = (appr_alg->label_lookup_.find(id));
+			if (search == (appr_alg->label_lookup_.end()) || (appr_alg->isMarkedDeleted(search->second))) {
+				return RESULT_ID_NOT_IN_INDEX;
+			}
+		});
     }
 
     int getDataById(int id, float* data, int dim) {
-		int label_c;
-		auto search = (appr_alg->label_lookup_.find(id));
-		if (search == (appr_alg->label_lookup_.end()) || (appr_alg->isMarkedDeleted(search->second))) {
-			return RESULT_GET_DATA_FAILED;
-		}
-		label_c = search->second;
-		char* data_ptrv = (appr_alg->getDataByInternalId(label_c));
-		float* data_ptr = (float*) data_ptrv;
-		for (int i = 0; i < dim; i++) {
-			data[i] = *data_ptr;
-            data_ptr += 1;
-		}
-		return RESULT_SUCCESSFUL;
+    	TRY_CATCH_RETURN_INT_BLOCK({
+			int label_c;
+			auto search = (appr_alg->label_lookup_.find(id));
+			if (search == (appr_alg->label_lookup_.end()) || (appr_alg->isMarkedDeleted(search->second))) {
+				return RESULT_ID_NOT_IN_INDEX;
+			}
+			label_c = search->second;
+			char* data_ptrv = (appr_alg->getDataByInternalId(label_c));
+			float* data_ptr = (float*) data_ptrv;
+			for (int i = 0; i < dim; i++) {
+				data[i] = *data_ptr;
+				data_ptr += 1;
+			}
+		});
     }
 
     float compute_similarity(float* vector1, float* vector2) {
-    	return (appr_alg -> fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
+    	float similarity;
+        try {
+        	similarity = (appr_alg->fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
+        } catch (...) {
+        	similarity = NAN;
+        }
+    	return similarity;
     }
 
     int knn_query(float* input, bool input_normalized, int k, int* indices /* output */, float* coefficients /* output */) {
@@ -163,8 +177,10 @@ public:
         });
     }
 
-    void mark_deleted(size_t label) {
-        appr_alg->markDelete(label);
+    int mark_deleted(int label) {
+        TRY_CATCH_RETURN_INT_BLOCK({
+        	appr_alg->markDelete(label);
+        });
     }
 
     void resize_index(size_t new_size) {
@@ -180,7 +196,7 @@ public:
     }
 
     int clear_index() {
-    	TRY_CATCH_RETURN_INT_BLOCK({
+    	TRY_CATCH_NO_INITIALIZE_CHECK_AND_RETURN_INT_BLOCK({
 			delete l2space;
 			if (appr_alg)
 				delete appr_alg;
@@ -190,7 +206,6 @@ public:
 
     std::string space_name;
     int dim;
-    bool ep_added;
     bool index_cleared;
     bool index_initialized;
     bool data_must_be_normalized;
@@ -214,7 +229,7 @@ EXTERN_C DLLEXPORT Index<float>* createNewIndex(char* spaceName, int dimension){
 }
 
 EXTERN_C DLLEXPORT int initNewIndex(Index<float>* index, int maxNumberOfElements, int M = 16, int efConstruction = 200, int randomSeed = 100) {
-    return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
+	return index->init_new_index(maxNumberOfElements, M, efConstruction, randomSeed);
 } 
 
 EXTERN_C DLLEXPORT int addItemToIndex(float* item, int normalized, int label, Index<float>* index) {
@@ -252,15 +267,31 @@ EXTERN_C DLLEXPORT int setEf(Index<float>* index, int ef) {
 }
 
 EXTERN_C DLLEXPORT int getData(Index<float>* index, int id, float* vector, int dim) {
-	return index-> getDataById(id, vector, dim);
+	return index->getDataById(id, vector, dim);
 }
 
-EXTERN_C DLLEXPORT bool hasId(Index<float>* index, int id) {
-	return index-> hasId(id);
+EXTERN_C DLLEXPORT int hasId(Index<float>* index, int id) {
+	return index->hasId(id);
 }
 
 EXTERN_C DLLEXPORT float computeSimilarity(Index<float>* index, float* vector1, float* vector2) {
-	return index -> compute_similarity(vector1, vector2);
+	return index->compute_similarity(vector1, vector2);
+}
+
+EXTERN_C DLLEXPORT int getM(Index<float>* index) {
+    return index->get_M();
+}
+
+EXTERN_C DLLEXPORT int getEfConstruction(Index<float>* index) {
+    return index->get_ef_construction();
+}
+
+EXTERN_C DLLEXPORT int getEf(Index<float>* index) {
+    return index->get_ef();
+}
+
+EXTERN_C DLLEXPORT int markDeleted(Index<float>* index, int id) {
+    return index->mark_deleted(id);
 }
 
 int main(){

@@ -1,6 +1,7 @@
 package com.stepstone.search.hnswlib.jna;
 
 import com.stepstone.search.hnswlib.jna.exception.IndexAlreadyInitializedException;
+import com.stepstone.search.hnswlib.jna.exception.IndexNotInitializedException;
 import com.stepstone.search.hnswlib.jna.exception.ItemCannotBeInsertedIntoTheVectorSpaceException;
 import com.stepstone.search.hnswlib.jna.exception.OnceIndexIsClearedItCannotBeReusedException;
 import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsException;
@@ -22,12 +23,12 @@ import java.util.Optional;
  */
 public class Index {
 
-	protected static final int NO_LABEL = -1;
+	protected static final int NO_ID = -1;
 	private static final int RESULT_SUCCESSFUL = 0;
 	private static final int RESULT_QUERY_NO_RESULTS = 3;
 	private static final int RESULT_ITEM_CANNOT_BE_INSERTED_INTO_THE_VECTOR_SPACE = 4;
 	private static final int RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED = 5;
-	private static final int RESULT_GET_DATA_FAILED = 6;
+	private static final int RESULT_INDEX_NOT_INITIALIZED = 8;
 
 	private static Hnswlib hnswlib = HnswlibFactory.getInstance();
 
@@ -101,13 +102,13 @@ public class Index {
 	}
 
 	/**
-	 * Add an item without label to the index. Internally, an incremental
-	 * label (starting from 1) will be given to this item.
+	 * Add an item without ID to the index. Internally, an incremental
+	 * identifier (starting from 1) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
 	public void addItem(float[] item) {
-		addItem(item, NO_LABEL);
+		addItem(item, NO_ID);
 	}
 
 	/**
@@ -115,30 +116,30 @@ public class Index {
 	 * unless it is required by the Vector Space (e.g., COSINE).
 	 *
 	 * @param item - float array with the length expected by the index (dimension);
-	 * @param label - an identifier used by the native library.
+	 * @param id - an identifier used by the native library.
 	 */
-	public void addItem(float[] item, int label) {
-		checkResultCode(hnswlib.addItemToIndex(item, false, label, reference));
+	public void addItem(float[] item, int id) {
+		checkResultCode(hnswlib.addItemToIndex(item, false, id, reference));
 	}
 
 	/**
-	 * Add a normalized item without label to the index. Internally, an incremental
-	 * label (starting from 0) will be given to this item.
+	 * Add a normalized item without ID to the index. Internally, an incremental
+	 * ID (starting from 0) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
 	public void addNormalizedItem(float[] item) {
-		addNormalizedItem(item, NO_LABEL);
+		addNormalizedItem(item, NO_ID);
 	}
 
 	/**
 	 * Add a normalized item with ID to the index.
 	 *
 	 * @param item - float array with the length expected by the index (dimension);
-	 * @param label - an identifier used by the native library.
+	 * @param id - an identifier used by the native library.
 	 */
-	public void addNormalizedItem(float[] item, int label) {
-		checkResultCode(hnswlib.addItemToIndex(item, true, label, reference));
+	public void addNormalizedItem(float[] item, int id) {
+		checkResultCode(hnswlib.addItemToIndex(item, true, id, reference));
 	}
 
 	/**
@@ -162,7 +163,7 @@ public class Index {
 	 */
 	public QueryTuple knnQuery(float[] input, int k) {
 		QueryTuple queryTuple = new QueryTuple(k);
-		checkResultCode(hnswlib.knnQuery(reference, input, false, k, queryTuple.labels, queryTuple.coefficients));
+		checkResultCode(hnswlib.knnQuery(reference, input, false, k, queryTuple.ids, queryTuple.coefficients));
 		return queryTuple;
 	}
 
@@ -177,7 +178,7 @@ public class Index {
 	 */
 	public QueryTuple knnNormalizedQuery(float[] input, int k) {
 		QueryTuple queryTuple = new QueryTuple(k);
-		checkResultCode(hnswlib.knnQuery(reference, input, true, k, queryTuple.labels, queryTuple.coefficients));
+		checkResultCode(hnswlib.knnQuery(reference, input, true, k, queryTuple.ids, queryTuple.coefficients));
 		return queryTuple;
 	}
 
@@ -243,26 +244,96 @@ public class Index {
 				throw new ItemCannotBeInsertedIntoTheVectorSpaceException();
 			case RESULT_ONCE_INDEX_IS_CLEARED_IT_CANNOT_BE_REUSED:
 				throw new OnceIndexIsClearedItCannotBeReusedException();
+			case RESULT_INDEX_NOT_INITIALIZED:
+				throw new IndexNotInitializedException();
 			default:
 				throw new UnexpectedNativeException();
 		}
 	}
 
+	/**
+	 * Checks whether there is an item with the specified identifier in the index.
+	 *
+	 * @param id - identifier.
+	 * @return true or false.
+	 */
 	public boolean hasId(int id) {
-		return hnswlib.hasId(reference, id);
+		return hnswlib.hasId(reference, id) == RESULT_SUCCESSFUL;
 	}
 
+	/**
+	 * Gets the data from a specific identifier in the index.
+	 *
+	 * @param id - identifier.
+	 *
+	 * @return an optional containing or not the
+	 */
 	public Optional<float[]> getData(int id) {
 		float[] vector = new float[dimension];
 		int success = hnswlib.getData(reference, id, vector, dimension);
-		if (success != RESULT_GET_DATA_FAILED) {
+		if (success == RESULT_SUCCESSFUL) {
 			return Optional.of(vector);
 		}
 		return Optional.empty();
 	}
 
+	/**
+	 * Computer similarity on the native side taking advantage of
+	 * SSE, AVX, SIMD instructions, when available.
+	 *
+	 * @param vector1 array with correct dimension;
+	 * @param vector2 array with correct dimension.
+	 *
+	 * @return the similarity score.
+	 */
 	public float computeSimilarity(float[] vector1, float[] vector2) {
+		checkIndexIsInitialized();
 		return hnswlib.computeSimilarity(reference, vector1, vector2);
+	}
+
+	/**
+	 * Retrieves the current M value.
+	 *
+	 * @return the M value.
+	 */
+	public int getM(){
+		checkIndexIsInitialized();
+		return hnswlib.getM(reference);
+	}
+
+	/**
+	 * Retrieves the current Ef value.
+	 *
+	 * @return the EF value.
+	 */
+	public int getEf(){
+		checkIndexIsInitialized();
+		return hnswlib.getEf(reference);
+	}
+
+	/**
+	 * Retrieves the current ef construction.
+	 *
+	 * @return the ef construction value.
+	 */
+	public int getEfConstruction(){
+		checkIndexIsInitialized();
+		return hnswlib.getEfConstruction(reference);
+	}
+
+	/**
+	 * Marks an ID as deleted.
+	 *
+	 * @param id identifier.
+	 */
+	public void markDeleted(int id){
+		checkResultCode(hnswlib.markDeleted(reference, id));
+	}
+
+	private void checkIndexIsInitialized() {
+		if (!initialized) {
+			throw new IndexNotInitializedException();
+		}
 	}
 
 	/**

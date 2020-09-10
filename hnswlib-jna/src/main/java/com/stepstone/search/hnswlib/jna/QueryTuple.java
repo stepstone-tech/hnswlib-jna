@@ -2,15 +2,15 @@ package com.stepstone.search.hnswlib.jna;
 
 /**
  * Query Tuple that represents the results of a knn query.
- * It contains two arrays: labels and coefficients.
+ * It contains two arrays: ids and coefficients.
  */
 public class QueryTuple {
 
-	int[] labels;
+	int[] ids;
 	float[] coefficients;
 
 	QueryTuple (int k) {
-		labels = new int[k];
+		ids = new int[k];
 		coefficients = new float[k];
 	}
 
@@ -18,7 +18,7 @@ public class QueryTuple {
 		return coefficients;
 	}
 
-	public int[] getLabels() {
-		return labels;
+	public int[] getIds() {
+		return ids;
 	}
 }

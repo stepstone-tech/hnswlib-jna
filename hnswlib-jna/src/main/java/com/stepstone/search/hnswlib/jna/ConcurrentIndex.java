@@ -1,6 +1,7 @@
 package com.stepstone.search.hnswlib.jna;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -26,8 +27,8 @@ public class ConcurrentIndex extends Index {
 	}
 
 	/**
-	 * Thread-safe method which adds an item without label to the index.
-	 * Internally, an incremental label (starting from 1) will be given to this item.
+	 * Thread-safe method which adds an item without ID to the index.
+	 * Internally, an incremental ID (starting from 1) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
@@ -35,7 +36,7 @@ public class ConcurrentIndex extends Index {
 	public void addItem(float[] item) {
 		this.writeLock.lock();
 		try {
-			super.addItem(item, NO_LABEL);
+			super.addItem(item, NO_ID);
 		} finally {
 			this.writeLock.unlock();
 		}
@@ -47,21 +48,21 @@ public class ConcurrentIndex extends Index {
 	 * by the Vector Space (e.g., COSINE).
 	 *
 	 * @param item - float array with the length expected by the index (dimension);
-	 * @param label - an identifier used by the native library.
+	 * @param id - an identifier used by the native library.
 	 */
 	@Override
-	public void addItem(float[] item, int label) {
+	public void addItem(float[] item, int id) {
 		this.writeLock.lock();
 		try {
-			super.addItem(item, label);
+			super.addItem(item, id);
 		} finally {
 			this.writeLock.unlock();
 		}
 	}
 
 	/**
-	 * Thread-safe method which adds a normalized item without label to the index.
-	 * Internally, an incremental label (starting from 0) will be given to this item.
+	 * Thread-safe method which adds a normalized item without ID to the index.
+	 * Internally, an incremental ID (starting from 0) will be given to this item.
 	 *
 	 * @param item - float array with the length expected by the index (dimension).
 	 */
@@ -69,7 +70,7 @@ public class ConcurrentIndex extends Index {
 	public void addNormalizedItem(float[] item) {
 		this.writeLock.lock();
 		try {
-			super.addNormalizedItem(item, Index.NO_LABEL);
+			super.addNormalizedItem(item, Index.NO_ID);
 		} finally {
 			this.writeLock.unlock();
 		}
@@ -79,13 +80,13 @@ public class ConcurrentIndex extends Index {
 	 * Thread-safe method which adds a normalized item with ID to the index.
 	 *
 	 * @param item - float array with the length expected by the index (dimension);
-	 * @param label - an identifier used by the native library.
+	 * @param id - an identifier used by the native library.
 	 */
 	@Override
-	public void addNormalizedItem(float[] item, int label) {
+	public void addNormalizedItem(float[] item, int id) {
 		this.writeLock.lock();
 		try {
-			super.addNormalizedItem(item, label);
+			super.addNormalizedItem(item, id);
 		} finally {
 			this.writeLock.unlock();
 		}
@@ -213,6 +214,56 @@ public class ConcurrentIndex extends Index {
 		} finally {
 			this.writeLock.unlock();
 		}
+	}
+
+	/**
+	 * Thread-safe method that checks whether there is an item with the specified identifier in the index.
+	 *
+	 * @param id - identifier.
+	 *
+	 * @return true or false.
+	 */
+	public boolean hasId(int id) {
+		this.readLock.lock();
+		boolean hasId;
+		try {
+			hasId = super.hasId(id);
+		} finally {
+			this.readLock.unlock();
+		}
+		return hasId;
+	}
+
+	/**
+	 * Thread-safe method that marks an ID as deleted.
+	 *
+	 * @param id identifier.
+	 */
+	public void markDeleted(int id) {
+		this.writeLock.lock();
+		try {
+			super.markDeleted(id);
+		} finally {
+			this.writeLock.unlock();
+		}
+	}
+
+	/**
+	 * Thread-safe method that gets the data from a specific identifier in the index.
+	 *
+	 * @param id - identifier.
+	 *
+	 * @return an optional containing or not the
+	 */
+	public Optional<float[]> getData(int id) {
+		this.readLock.lock();
+		Optional data;
+		try {
+			data = super.getData(id);
+		} finally {
+			this.readLock.unlock();
+		}
+		return data;
 	}
 
 }

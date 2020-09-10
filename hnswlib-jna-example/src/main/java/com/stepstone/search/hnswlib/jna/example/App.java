@@ -28,9 +28,9 @@ public class App {
 
         Index indexCosine = new Index(SpaceName.COSINE, 7);
         indexCosine.initialize(3);
-        indexCosine.addNormalizedItem(i1, 1_111_111); /* 1_111_111 is a label */
+        indexCosine.addNormalizedItem(i1, 1_111_111); /* 1_111_111 is an ID */
         indexCosine.addNormalizedItem(i2, 2_222_222);
-        indexCosine.addNormalizedItem(i3); /* if not defined, an incremental label will be automatically assigned */
+        indexCosine.addNormalizedItem(i3); /* if not defined, an incremental ID will be automatically assigned */
 
         float[] input = new float[] {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
         Index.normalize(input);
@@ -51,9 +51,9 @@ public class App {
         Index indexIP = new Index(SpaceName.IP, 7);
         indexIP.initialize(3, 16, 100, 200); /* set maxNumberOfElements, m, efConstruction and randomSeed */
         indexIP.setEf(10);
-        indexIP.addItem(i1, 1_111_111); /* 1_111_111 is a label */
+        indexIP.addItem(i1, 1_111_111); /* 1_111_111 is an ID */
         indexIP.addItem(i2, 0xCAFECAFE);
-        indexIP.addItem(i3); /* if not defined, an incremental label will be automatically assigned */
+        indexIP.addItem(i3); /* if not defined, an incremental ID will be automatically assigned */
 
         float[] input = new float[] {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 

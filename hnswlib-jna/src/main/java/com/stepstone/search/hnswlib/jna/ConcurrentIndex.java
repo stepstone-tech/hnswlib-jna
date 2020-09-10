@@ -235,6 +235,20 @@ public class ConcurrentIndex extends Index {
 	}
 
 	/**
+	 * Thread-safe method that marks an ID as deleted.
+	 *
+	 * @param id identifier.
+	 */
+	public void markDeleted(int id) {
+		this.writeLock.lock();
+		try {
+			super.markDeleted(id);
+		} finally {
+			this.writeLock.unlock();
+		}
+	}
+
+	/**
 	 * Thread-safe method that gets the data from a specific identifier in the index.
 	 *
 	 * @param id - identifier.

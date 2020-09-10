@@ -287,10 +287,53 @@ public class Index {
 	 * @return the similarity score.
 	 */
 	public float computeSimilarity(float[] vector1, float[] vector2) {
+		checkIndexIsInitialized();
+		return hnswlib.computeSimilarity(reference, vector1, vector2);
+	}
+
+	/**
+	 * Retrieves the current M value.
+	 *
+	 * @return the M value.
+	 */
+	public int getM(){
+		checkIndexIsInitialized();
+		return hnswlib.getM(reference);
+	}
+
+	/**
+	 * Retrieves the current Ef value.
+	 *
+	 * @return the EF value.
+	 */
+	public int getEf(){
+		checkIndexIsInitialized();
+		return hnswlib.getEf(reference);
+	}
+
+	/**
+	 * Retrieves the current ef construction.
+	 *
+	 * @return the ef construction value.
+	 */
+	public int getEfConstruction(){
+		checkIndexIsInitialized();
+		return hnswlib.getEfConstruction(reference);
+	}
+
+	/**
+	 * Marks an ID as deleted.
+	 *
+	 * @param id identifier.
+	 */
+	public void markDeleted(int id){
+		checkResultCode(hnswlib.markDeleted(reference, id));
+	}
+
+	private void checkIndexIsInitialized() {
 		if (!initialized) {
 			throw new IndexNotInitializedException();
 		}
-		return hnswlib.computeSimilarity(reference, vector1, vector2);
 	}
 
 	/**

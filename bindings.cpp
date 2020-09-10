@@ -72,11 +72,15 @@ public:
     	});
     }
 
-    size_t get_ef_construction() {
+   	int get_ef() {
+   		return appr_alg->ef_;
+   	}
+
+    int get_ef_construction() {
         return appr_alg->ef_construction_;
     }
 
-    size_t get_M() {
+    int get_M() {
         return appr_alg->M_;
     }
 
@@ -175,8 +179,10 @@ public:
         });
     }
 
-    void mark_deleted(size_t label) {
-        appr_alg->markDelete(label);
+    int mark_deleted(int label) {
+        TRY_CATCH_RETURN_INT_BLOCK({
+        	appr_alg->markDelete(label);
+        });
     }
 
     void resize_index(size_t new_size) {
@@ -264,7 +270,6 @@ EXTERN_C DLLEXPORT int setEf(Index<float>* index, int ef) {
 }
 
 EXTERN_C DLLEXPORT int getData(Index<float>* index, int id, float* vector, int dim) {
-
 	return index->getDataById(id, vector, dim);
 }
 
@@ -274,6 +279,22 @@ EXTERN_C DLLEXPORT int hasId(Index<float>* index, int id) {
 
 EXTERN_C DLLEXPORT float computeSimilarity(Index<float>* index, float* vector1, float* vector2) {
 	return index->compute_similarity(vector1, vector2);
+}
+
+EXTERN_C DLLEXPORT int getM(Index<float>* index) {
+    return index->get_M();
+}
+
+EXTERN_C DLLEXPORT int getEfConstruction(Index<float>* index) {
+    return index->get_ef_construction();
+}
+
+EXTERN_C DLLEXPORT int getEf(Index<float>* index) {
+    return index->get_ef();
+}
+
+EXTERN_C DLLEXPORT int markDeleted(Index<float>* index, int id) {
+    return index->mark_deleted(id);
 }
 
 int main(){

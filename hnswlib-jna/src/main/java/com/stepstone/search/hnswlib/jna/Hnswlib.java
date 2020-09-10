@@ -119,25 +119,67 @@ public interface Hnswlib extends Library {
 	 * @param id id
 	 * @param vector vector
 	 * @param dim dimension
+	 *
 	 * @return result code
 	 */
 	int getData(Pointer index, int id, float[] vector, int dim);
 
 	/**
-	 * Determine whether the index contains data for given id
+	 * Determine whether the index contains data for given id.
+	 *
 	 * @param index index
 	 * @param id id
+	 *
 	 * @return result_code
 	 */
 	int hasId(Pointer index, int id);
 
 	/**
 	 * Compute similarity between two vectors
+	 *
 	 * @param index index
 	 * @param vector1 vector1
 	 * @param vector2 vector2
+	 *
 	 * @return similarity score between vectors
 	 */
 	float computeSimilarity(Pointer index, float[] vector1, float[] vector2);
+
+	/**
+	 * Retrieves the value of M.
+	 *
+	 * @param index reference.
+	 *
+	 * @return value of M.
+	 */
+	int getM(Pointer index);
+
+	/**
+	 * Retrieves the current ef construction value.
+	 *
+	 * @param index reference.
+	 *
+	 * @return efConstruction value.
+	 */
+	int getEfConstruction(Pointer index);
+
+	/**
+	 * Retrieves the current ef value.
+	 *
+	 * @param index reference.
+	 *
+	 * @return EF value.
+	 */
+	int getEf(Pointer index);
+
+	/**
+	 * Marks an item ID as deleted.
+	 *
+	 * @param index reference;
+	 * @param id label.
+	 *
+	 * @return a result code.
+	 */
+	int markDeleted(Pointer index, int id);
 
 }

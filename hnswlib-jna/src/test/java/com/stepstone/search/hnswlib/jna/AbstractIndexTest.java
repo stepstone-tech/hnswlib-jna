@@ -453,4 +453,52 @@ public abstract class AbstractIndexTest {
 		index.knnNormalizedQuery(new float[1],1);
 	}
 
+	@Test(expected = IndexNotInitializedException.class)
+	public void testGetMWithoutInitializeIndex() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.getM();
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testGetEfWithoutInitializeIndex() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.getEf();
+	}
+
+	@Test(expected = IndexNotInitializedException.class)
+	public void testGetEfConstructionWithoutInitializeIndex() {
+		Index index = createIndexInstance(SpaceName.COSINE, 1);
+		index.getEfConstruction();
+	}
+
+	@Test
+	public void testMarkAsDeleted() {
+		Index index = createIndexInstance(SpaceName.COSINE, 7);
+		index.initialize(7);
+
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }, 14);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.95f }, 13);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f }, 12);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.85f }, 11);
+		index.addItem(new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.8f },10);
+
+		float[] input = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+		QueryTuple ipQT = index.knnQuery(input, 4);
+
+		assertArrayEquals(new int[] {14, 13, 12, 11}, ipQT.getIds());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 1.552105E-4f, 6.2948465E-4f, 0.001435399f}, ipQT.getCoefficients(), 0.000001f);
+
+		index.markDeleted(13);
+		QueryTuple ipQT2 = index.knnQuery(input, 4);
+		assertArrayEquals(new int[] {14, 12, 11, 10}, ipQT2.getIds());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 6.2948465E-4f, 0.001435399f, 0.0025851727f}, ipQT2.getCoefficients(), 0.000001f);
+
+		index.markDeleted(12);
+		QueryTuple ipQT3 = index.knnQuery(input, 3);
+		assertArrayEquals(new int[] {14, 11, 10}, ipQT3.getIds());
+		assertArrayEquals(new float[] {-2.3841858E-7f, 0.001435399f, 0.0025851727f}, ipQT3.getCoefficients(), 0.000001f);
+
+		index.clear();
+	}
+
 }

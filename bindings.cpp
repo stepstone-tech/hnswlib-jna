@@ -50,7 +50,6 @@ public:
             data_must_be_normalized = true;
         }
         appr_alg = NULL;
-        ep_added = true;
         index_initialized = false;
         index_cleared = false;
     }
@@ -62,7 +61,6 @@ public:
             }
             appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
             index_initialized = true;
-            ep_added = false;
         });
     }
 
@@ -208,7 +206,6 @@ public:
 
     std::string space_name;
     int dim;
-    bool ep_added;
     bool index_cleared;
     bool index_initialized;
     bool data_must_be_normalized;

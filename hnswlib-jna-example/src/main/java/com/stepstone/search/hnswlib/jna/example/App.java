@@ -39,7 +39,7 @@ public class App {
 
         System.out.println("Cosine Index - Query Results: ");
         System.out.println(Arrays.toString(cosineQT.getCoefficients()));
-        System.out.println(Arrays.toString(cosineQT.getLabels()));
+        System.out.println(Arrays.toString(cosineQT.getIds()));
         indexCosine.clear();
     }
 
@@ -61,7 +61,7 @@ public class App {
 
         System.out.println("Inner Product Index - Query Results: ");
         System.out.println(Arrays.toString(ipQT.getCoefficients()));
-        System.out.println(Arrays.toString(ipQT.getLabels()));
+        System.out.println(Arrays.toString(ipQT.getIds()));
         indexIP.clear();
     }
 

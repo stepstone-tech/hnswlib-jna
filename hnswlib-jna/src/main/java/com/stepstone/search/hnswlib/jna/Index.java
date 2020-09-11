@@ -266,7 +266,7 @@ public class Index {
 	 *
 	 * @param id - identifier.
 	 *
-	 * @return an optional containing or not the
+	 * @return an optional containing or not the data array.
 	 */
 	public Optional<float[]> getData(int id) {
 		float[] vector = new float[dimension];

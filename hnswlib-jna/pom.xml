@@ -28,7 +28,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <jar.plugin.version>2.2</jar.plugin.version>
     <jna.version>5.5.0</jna.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.13.1</junit.version>
   </properties>
 
   <dependencies>

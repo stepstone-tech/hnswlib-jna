@@ -152,6 +152,10 @@ public:
     float compute_similarity(float* vector1, float* vector2) {
     	float similarity;
         try {
+            if (data_must_be_normalized == true) {
+                normalize_array(vector1);
+                normalize_array(vector2);
+            }
         	similarity = (appr_alg->fstdistfunc_(vector1, vector2, (appr_alg -> dist_func_param_)));
         } catch (...) {
         	similarity = NAN;

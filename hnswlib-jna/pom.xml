@@ -6,7 +6,7 @@
 
   <name>hnswlib-jna</name>
   <artifactId>hnswlib-jna</artifactId>
-  <version>1.4.1</version>
+  <version>1.4.2</version>
 
   <licenses>
     <license>
@@ -18,7 +18,7 @@
   <parent>
     <groupId>com.stepstone.search.hnswlib.jna</groupId>
     <artifactId>hnswlib-jna-parent</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -28,7 +28,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <jar.plugin.version>2.2</jar.plugin.version>
     <jna.version>5.5.0</jna.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.13.1</junit.version>
   </properties>
 
   <dependencies>

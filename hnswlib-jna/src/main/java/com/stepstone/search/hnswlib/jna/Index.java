@@ -8,6 +8,9 @@ import com.stepstone.search.hnswlib.jna.exception.QueryCannotReturnResultsExcept
 import com.stepstone.search.hnswlib.jna.exception.UnableToCreateNewIndexInstanceException;
 import com.stepstone.search.hnswlib.jna.exception.UnexpectedNativeException;
 import com.sun.jna.Pointer;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -38,6 +41,7 @@ public class Index {
 	private SpaceName spaceName;
 	private int dimension;
 	private boolean referenceReused;
+	private IntSet ids = IntSets.synchronize(new IntArraySet());
 
 	public Index(SpaceName spaceName, int dimension) {
 		this.spaceName = spaceName;
@@ -123,6 +127,33 @@ public class Index {
 	}
 
 	/**
+	 * Add an item with ID to the index. It won't apply any extra normalization
+	 * unless it is required by the Vector Space (e.g., COSINE).
+	 * Save id to internal collection if saveId = true
+	 * @param item item
+	 * @param id id
+	 * @param saveId true to save id to internal collection
+	 */
+	public void addItem(float[] item, int id, boolean saveId) {
+		addItem(item, id);
+		if (saveId) {
+			ids.add(id);
+		}
+	}
+
+	public void setIds(IntSet ids) {
+		this.ids = ids;
+	}
+
+	/**
+	 * Get ids for items in this index
+	 * @return set of ids
+	 */
+	public IntSet getIds() {
+		return ids;
+	}
+
+	/**
 	 * Add a normalized item without ID to the index. Internally, an incremental
 	 * ID (starting from 0) will be given to this item.
 	 *
@@ -140,6 +171,19 @@ public class Index {
 	 */
 	public void addNormalizedItem(float[] item, int id) {
 		checkResultCode(hnswlib.addItemToIndex(item, true, id, reference));
+	}
+
+	/**
+	 * Add a normalized item with ID to the index.
+	 *
+	 * @param item - float array with the length expected by the index (dimension);
+	 * @param id - an identifier used by the native library.
+	 */
+	public void addNormalizedItem(float[] item, int id, boolean saveId) {
+		addNormalizedItem(item, id);
+		if (saveId) {
+			ids.add(id);
+		}
 	}
 
 	/**
@@ -328,6 +372,9 @@ public class Index {
 	 */
 	public void markDeleted(int id){
 		checkResultCode(hnswlib.markDeleted(reference, id));
+		if (ids.contains(id)) {
+			ids.remove(id);
+		}
 	}
 
 	private void checkIndexIsInitialized() {
@@ -372,6 +419,7 @@ public class Index {
 		concurrentIndex.reference = index.reference;
 		concurrentIndex.cleared = index.cleared;
 		concurrentIndex.initialized = index.initialized;
+		concurrentIndex.setIds(index.getIds());
 		index.referenceReused = true;
 		return concurrentIndex;
 	}
